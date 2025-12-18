@@ -3,7 +3,7 @@ import pandas as pd
 import torch
 import torch.nn as nn
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler  # 数据标准化
 from torch import optim
@@ -49,8 +49,9 @@ def train_model(
         features: torch.Tensor,
         labels: torch.Tensor,
         loss_fn,
+        name: str,
         lr: float = 0.01,
-        batch_size: int = 64,
+        batch_size: int = 256,
         epoch_num: int = 100
 ) -> nn.Module:
     """
@@ -64,8 +65,11 @@ def train_model(
     :param epoch_num: 训练轮数
     :return: 训练好的模型
     """
+
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    print(f"训练设备: {device}")
+    print(f"使用设备: {device}")
+
+    # device = torch.device("cpu")
 
     # 模型准备
     model.train()
@@ -80,7 +84,8 @@ def train_model(
         dataset,
         batch_size=batch_size,
         shuffle=True,
-        drop_last=False
+        drop_last=False,
+        num_workers=8,
     )
 
     # 训练循环
@@ -112,7 +117,7 @@ def train_model(
         if (epoch + 1) % 10 == 0:
             avg_loss = total_loss / batch_count if batch_count > 0 else 0.0
             print(f"Epoch {(epoch + 1)}/{epoch_num} | Average loss: {avg_loss:.4f}")
-
+    torch.save(model.state_dict(), f'trained_model_{name}.pth')
     return model
 
 
@@ -130,12 +135,13 @@ def test_model(
     :param batch_size: 批次大小
     """
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    # device = torch.device("cpu")
     model.eval()
     model = model.to(device)
 
     # 数据加载器
     dataset = TensorDataset(features, labels)
-    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False)
+    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=8)
 
     # 损失函数
     loss_fn = nn.BCELoss(reduction='mean')
@@ -160,13 +166,24 @@ def test_model(
             predicted = (output > ALPHA).float()
             correct_num += (predicted == label).sum().item()
 
+            false_negative = ((1 - predicted) * label).sum().item()
+            true_positive = (predicted * label).sum().item()
+            false_positive = (predicted * (1 - label)).sum().item()
+            true_negative = ((1 - predicted) * (1 - label)).sum().item()
+
         # 计算指标
         accuracy = correct_num / total_samples
+        precision = true_positive / (true_positive + false_positive + 1e-8)
+        recall_rate = true_positive / (true_positive + false_negative + 1e-8)
         average_loss = total_loss / total_samples
+        f1_score = 2 * (precision * recall_rate) / (precision + recall_rate + 1e-8)
 
         print("=" * 50)
         print(f"测试结果(设备: {device}): ")
         print(f"平均损失: {average_loss:.4f}")
+        print(f"精确率: {precision:.4f}") # 测的阳性中有多少人是真的阳性
+        print(f"召回率: {recall_rate:.4f}") # 实际阳性中有多少人被正确识别为阳性
+        print(f"F1分数: {f1_score:.4f}") # 综合考虑精确率和召回率
         print(f"准确率: {accuracy:.4f}")
         print("=" * 50)
 
@@ -213,10 +230,16 @@ def test_rf(
     """
     prediction = classifier.predict(features)
     accuracy = accuracy_score(labels, prediction)
+    precision = precision_score(labels, prediction)
+    recall_rate = recall_score(labels, prediction)
+    f1 = f1_score(labels, prediction)
 
     print("=" * 50)
     print("随机森林测试结果:")
     print(f"准确率: {accuracy:.4f}")
+    print(f"精确率: {precision:.4f}")
+    print(f"召回率: {recall_rate:.4f}")
+    print(f"F1分数: {f1:.4f}")
     print("=" * 50)
 
 
@@ -224,7 +247,7 @@ def main():
     # 1. 数据加载与预处理
     df = pd.read_csv(
         'data/train.csv',
-        nrows=1000,  # 测试用小样本，实际可去掉
+        # nrows=1000,  # 测试用小样本，实际可去掉
         usecols=['bmi', 'waist_to_hip_ratio', 'cholesterol_total',
                  'triglycerides', 'family_history_diabetes', 'diagnosed_diabetes']
     )
@@ -265,7 +288,8 @@ def main():
         labels=y_train_tensor,
         loss_fn=nn.BCELoss(reduction='mean'),
         lr=0.01,
-        epoch_num=EPOCH_NUM
+        epoch_num=EPOCH_NUM,
+        name="lg"
     )
     print("\n=== 测试逻辑斯蒂回归 ===")
     test_model(lg_model, X_test_tensor, y_test_tensor)
@@ -279,7 +303,8 @@ def main():
         labels=y_train_tensor,
         loss_fn=nn.BCELoss(reduction='mean'),
         lr=0.001,  # MLP学习率更小
-        epoch_num=EPOCH_NUM
+        epoch_num=EPOCH_NUM,
+        name="mlp"
     )
     print("\n=== 测试MLP ===")
     test_model(mlp_model, X_test_tensor, y_test_tensor)
