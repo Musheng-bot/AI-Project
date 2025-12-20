@@ -3,9 +3,16 @@ import pandas as pd
 import torch
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
-from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 import matplotlib.pyplot as plt
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
+from sklearn.svm import SVC
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.naive_bayes import GaussianNB
+from sklearn.neural_network import MLPClassifier
 
 def prepare_data():
     df = pd.read_csv(
@@ -30,147 +37,7 @@ def prepare_data():
     return (torch.tensor(X_train), torch.tensor(y_train),
             torch.tensor(X_test), torch.tensor(y_test))
 
-models = [
-    'Random Forest',
-    'Logistic Regression',
-    'SVM',
-    'KNN',
-    'Decision Tree',
-    'Naive Bayes',
-    'Neural Network'
-]
 
-def rf_train(X_train, y_train, X_test, y_test, n_estimators=200, max_depth=5):
-    rf_clf = RandomForestClassifier(
-        n_estimators=n_estimators, max_depth=max_depth, random_state=42, n_jobs=-1
-    )
-    rf_clf.fit(X_train.numpy(), y_train.numpy().ravel())
-    rf_pred = rf_clf.predict(X_test.numpy())
-
-    accuracy = accuracy_score(y_test.numpy(), rf_pred)
-    precision = precision_score(y_test.numpy(), rf_pred)
-    recall = recall_score(y_test.numpy(), rf_pred)
-    f1 = f1_score(y_test.numpy(), rf_pred)
-    print("\n=== 随机森林结果 ===")
-    print(f"准确率: {accuracy:.4f}")
-    print(f"精确率: {precision:.4f}")
-    print(f"召回率: {recall:.4f}")
-    print(f"F1 分数: {f1:.4f}")
-    return rf_clf, accuracy, precision, recall, f1
-
-def Logistic_regression_train(X_train, y_train, X_test, y_test):
-    from sklearn.linear_model import LogisticRegression
-
-    lr_clf = LogisticRegression(max_iter=1000, random_state=42)
-    lr_clf.fit(X_train.numpy(), y_train.numpy().ravel())
-    lr_pred = lr_clf.predict(X_test.numpy())
-
-    accuracy = accuracy_score(y_test.numpy(), lr_pred)
-    precision = precision_score(y_test.numpy(), lr_pred)
-    recall = recall_score(y_test.numpy(), lr_pred)
-    f1 = f1_score(y_test.numpy(), lr_pred)
-    print("\n=== 逻辑回归结果 ===")
-    print(f"准确率: {accuracy:.4f}")
-    print(f"精确率: {precision:.4f}")
-    print(f"召回率: {recall:.4f}")
-    print(f"F1 分数: {f1:.4f}")
-    return lr_clf, accuracy, precision, recall, f1
-
-def svm_train(X_train, y_train, X_test, y_test):
-    from sklearn.svm import SVC
-
-    svm_clf = SVC(kernel='linear', random_state=42)
-    svm_clf.fit(X_train.numpy(), y_train.numpy().ravel())
-    svm_pred = svm_clf.predict(X_test.numpy())
-
-    accuracy = accuracy_score(y_test.numpy(), svm_pred)
-    precision = precision_score(y_test.numpy(), svm_pred)
-    recall = recall_score(y_test.numpy(), svm_pred)
-    f1 = f1_score(y_test.numpy(), svm_pred)
-    print("\n=== 支持向量机结果 ===")
-    print(f"准确率: {accuracy:.4f}")
-    print(f"精确率: {precision:.4f}")
-    print(f"召回率: {recall:.4f}")
-    print(f"F1 分数: {f1:.4f}")
-    return svm_clf, accuracy, precision, recall, f1
-
-def decision_tree_train(X_train, y_train, X_test, y_test):
-    from sklearn.tree import DecisionTreeClassifier
-
-    dt_clf = DecisionTreeClassifier(random_state=42)
-    dt_clf.fit(X_train.numpy(), y_train.numpy().ravel())
-    dt_pred = dt_clf.predict(X_test.numpy())
-
-    accuracy = accuracy_score(y_test.numpy(), dt_pred)
-    precision = precision_score(y_test.numpy(), dt_pred)
-    recall = recall_score(y_test.numpy(), dt_pred)
-    f1 = f1_score(y_test.numpy(), dt_pred)
-    print("\n=== 决策树结果 ===")
-    print(f"准确率: {accuracy:.4f}")
-    print(f"精确率: {precision:.4f}")
-    print(f"召回率: {recall:.4f}")
-    print(f"F1 分数: {f1:.4f}")
-    return dt_clf, accuracy, precision, recall, f1
-
-def knn_train(X_train, y_train, X_test, y_test):
-    from sklearn.neighbors import KNeighborsClassifier
-
-    # 离散数据，使用曼哈顿距离
-    # weights选择'distance'关注近邻中距离较近的点，以提高分类效果
-    knn_clf = KNeighborsClassifier(n_neighbors=200, weights='distance', metric='manhattan', n_jobs=-1)
-    knn_clf.fit(X_train.numpy(), y_train.numpy().ravel())
-    knn_pred = knn_clf.predict(X_test.numpy())
-    correct_proba, convince_proba = get_probabilities(knn_clf, X_test, y_test)
-        
-    accuracy = accuracy_score(y_test.numpy(), knn_pred)
-    precision = precision_score(y_test.numpy(), knn_pred)
-    recall = recall_score(y_test.numpy(), knn_pred)
-    f1 = f1_score(y_test.numpy(), knn_pred)
-    print("\n=== KNN结果 ===")
-    print(f"准确率: {accuracy:.4f}")
-    print(f"精确率: {precision:.4f}")
-    print(f"召回率: {recall:.4f}")
-    print(f"F1 分数: {f1:.4f}")
-    print(f"预测正确的概率平均: {correct_proba.mean():.4f}")
-    print(f"预测可信度的概率平均: {convince_proba.mean():.4f}")
-
-    return knn_clf, accuracy, precision, recall, f1
-
-def naive_bayes_train(X_train, y_train, X_test, y_test):
-    from sklearn.naive_bayes import GaussianNB
-
-    nb_clf = GaussianNB()
-    nb_clf.fit(X_train.numpy(), y_train.numpy().ravel())
-    nb_pred = nb_clf.predict(X_test.numpy())
-
-    accuracy = accuracy_score(y_test.numpy(), nb_pred)
-    precision = precision_score(y_test.numpy(), nb_pred)
-    recall = recall_score(y_test.numpy(), nb_pred)
-    f1 = f1_score(y_test.numpy(), nb_pred)
-    print("\n=== 朴素贝叶斯结果 ===")
-    print(f"准确率: {accuracy:.4f}")
-    print(f"精确率: {precision:.4f}")
-    print(f"召回率: {recall:.4f}")
-    print(f"F1 分数: {f1:.4f}")
-    return nb_clf, accuracy, precision, recall, f1
-
-def neural_network_train(X_train, y_train, X_test, y_test):
-    from sklearn.neural_network import MLPClassifier
-
-    nn_clf = MLPClassifier(hidden_layer_sizes=(50, 25), max_iter=500, random_state=42)
-    nn_clf.fit(X_train.numpy(), y_train.numpy().ravel())
-    nn_pred = nn_clf.predict(X_test.numpy())
-
-    accuracy = accuracy_score(y_test.numpy(), nn_pred)
-    precision = precision_score(y_test.numpy(), nn_pred)
-    recall = recall_score(y_test.numpy(), nn_pred)
-    f1 = f1_score(y_test.numpy(), nn_pred)
-    print("\n=== 神经网络结果 ===")
-    print(f"准确率: {accuracy:.4f}")
-    print(f"精确率: {precision:.4f}")
-    print(f"召回率: {recall:.4f}")
-    print(f"F1 分数: {f1:.4f}")
-    return nn_clf, accuracy, precision, recall, f1
 
 # 预测正确的概率， 预测可信度的概率
 def get_probabilities(model, X_test, y_test):
@@ -186,15 +53,6 @@ def get_probabilities(model, X_test, y_test):
     return np.array(correct_proba), np.array(convince_proba)
     
 
-train_functions = {
-    'Random Forest': rf_train,
-    'Logistic Regression': Logistic_regression_train,
-    'SVM': svm_train,
-    'Decision Tree': decision_tree_train,
-    'KNN': knn_train,
-    'Naive Bayes': naive_bayes_train,
-    'Neural Network': neural_network_train
-}
 def plot_feature_importance(model, features):
     imp = model.feature_importances_
     features = [
@@ -214,26 +72,49 @@ def plot_feature_importance(model, features):
     for feature, importance in zip(features, imp):
         print(f"{feature}: {importance:.4f}")
 
-train_models = [
-    # 'Random Forest',
-    # 'Logistic Regression',
-    # 'SVM',
-    'KNN',
-    # 'Decision Tree',
-    # 'Naive Bayes',
-    # 'Neural Network'
-]
+
+models = {
+    # 'Random Forest': RandomForestClassifier(n_estimators=200, max_depth=5, random_state=42, n_jobs=-1),
+    # 'Logistic Regression': LogisticRegression(max_iter=1000, random_state=42),
+    # 'SVM': SVC(kernel='linear', probability=True, random_state=42),
+    'KNN': KNeighborsClassifier(n_neighbors=200, weights='distance', metric='manhattan', n_jobs=-1),
+    # 'Decision Tree': DecisionTreeClassifier(random_state=42),
+    # 'Naive Bayes': GaussianNB(),
+    # 'Neural Network': MLPClassifier(hidden_layer_sizes=(50, 25), max_iter=500, random_state=42)
+}
+
+
+def train_model(model, X_train, y_train, X_test, y_test):
+    model.fit(X_train.numpy(), y_train.numpy().ravel())
+    nb_pred = model.predict(X_test.numpy())
+
+    accuracy = accuracy_score(y_test.numpy(), nb_pred)
+    precision = precision_score(y_test.numpy(), nb_pred)
+    recall = recall_score(y_test.numpy(), nb_pred)
+    f1 = f1_score(y_test.numpy(), nb_pred)
+    correct_proba, convince_proba = get_probabilities(model, X_test, y_test)
+    print("\n=== 朴素贝叶斯结果 ===")
+    print(f"准确率: {accuracy:.4f}")
+    print(f"精确率: {precision:.4f}")
+    print(f"召回率: {recall:.4f}")
+    print(f"F1 分数: {f1:.4f}")
+    print(f"预测正确的概率平均: {correct_proba.mean():.4f}")
+    print(f"预测可信度的概率平均: {convince_proba.mean():.4f}")
+    return model, accuracy, precision, recall, f1, correct_proba.mean(), convince_proba.mean()
+
 def main():
     X_train, y_train, X_test, y_test = prepare_data()
-    for model_name in train_models:
-        train_func = train_functions[model_name]
-        model, accuracy, precision, recall, f1 = train_func(X_train, y_train, X_test, y_test)
+    for model_name in models:
+        model = models[model_name]
+        model, accuracy, precision, recall, f1, correct_proba_mean, convince_proba_mean = train_model(model, X_train, y_train, X_test, y_test)
         with open('model_results.txt', 'a') as f:
             f.write(f"{model_name} Results:\n")
             f.write(f"Accuracy: {accuracy:.4f}\n")
             f.write(f"Precision: {precision:.4f}\n")
             f.write(f"Recall: {recall:.4f}\n")
-            f.write(f"F1 Score: {f1:.4f}\n\n")
+            f.write(f"F1 Score: {f1:.4f}\n")
+            f.write(f"Correct Probability Mean: {correct_proba_mean:.4f}\n")
+            f.write(f"Convince Probability Mean: {convince_proba_mean:.4f}\n\n")
         if model_name == 'Random Forest':
             plot_feature_importance(model, [
                 'bmi',
