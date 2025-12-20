@@ -1,0 +1,100 @@
+数据基本信息:
+<class 'pandas.core.frame.DataFrame'>
+RangeIndex: 700000 entries, 0 to 699999
+Data columns (total 6 columns):
+ #   Column                   Non-Null Count   Dtype  
+---  ------                   --------------   -----  
+ 0   bmi                      700000 non-null  float64
+ 1   waist_to_hip_ratio       700000 non-null  float64
+ 2   cholesterol_total        700000 non-null  int64  
+ 3   triglycerides            700000 non-null  int64  
+ 4   family_history_diabetes  700000 non-null  int64  
+ 5   diagnosed_diabetes       700000 non-null  float64
+dtypes: float64(3), int64(3)
+memory usage: 32.0 MB
+None
+
+前5行数据:
+    bmi  waist_to_hip_ratio  cholesterol_total  triglycerides  family_history_diabetes  diagnosed_diabetes
+0  33.4                0.93                199            102                        0                 1.0
+1  23.8                0.83                199            124                        0                 1.0
+2  24.1                0.83                188            108                        0                 0.0
+3  26.6                0.83                182            123                        0                 1.0
+4  28.8                0.90                206            124                        0                 1.0
+
+=== 训练逻辑斯蒂回归 ===
+使用设备: cuda
+Epoch 10/200 | Average loss: 0.6281
+Epoch 20/200 | Average loss: 0.6282
+Epoch 30/200 | Average loss: 0.6282
+Epoch 40/200 | Average loss: 0.6282
+Epoch 50/200 | Average loss: 0.6282
+Epoch 60/200 | Average loss: 0.6282
+Epoch 70/200 | Average loss: 0.6281
+Epoch 80/200 | Average loss: 0.6282
+Epoch 90/200 | Average loss: 0.6282
+Epoch 100/200 | Average loss: 0.6281
+Epoch 110/200 | Average loss: 0.6281
+Epoch 120/200 | Average loss: 0.6281
+Epoch 130/200 | Average loss: 0.6282
+Epoch 140/200 | Average loss: 0.6281
+Epoch 150/200 | Average loss: 0.6282
+Epoch 160/200 | Average loss: 0.6282
+Epoch 170/200 | Average loss: 0.6282
+Epoch 180/200 | Average loss: 0.6282
+Epoch 190/200 | Average loss: 0.6281
+Epoch 200/200 | Average loss: 0.6281
+
+=== 测试逻辑斯蒂回归 ===
+==================================================
+测试结果(设备: cuda): 
+平均损失: 0.6284
+精确率: 0.6452
+召回率: 1.0000
+F1分数: 0.7843
+准确率: 0.6292
+==================================================
+
+=== 训练MLP ===
+使用设备: cuda
+Epoch 10/200 | Average loss: 0.6285
+Epoch 20/200 | Average loss: 0.6285
+Epoch 30/200 | Average loss: 0.6284
+Epoch 40/200 | Average loss: 0.6284
+Epoch 50/200 | Average loss: 0.6285
+Epoch 60/200 | Average loss: 0.6285
+Epoch 70/200 | Average loss: 0.6284
+Epoch 80/200 | Average loss: 0.6284
+Epoch 90/200 | Average loss: 0.6284
+Epoch 100/200 | Average loss: 0.6285
+Epoch 110/200 | Average loss: 0.6285
+Epoch 120/200 | Average loss: 0.6284
+Epoch 130/200 | Average loss: 0.6285
+Epoch 140/200 | Average loss: 0.6284
+Epoch 150/200 | Average loss: 0.6284
+Epoch 160/200 | Average loss: 0.6285
+Epoch 170/200 | Average loss: 0.6285
+Epoch 180/200 | Average loss: 0.6285
+Epoch 190/200 | Average loss: 0.6284
+Epoch 200/200 | Average loss: 0.6285
+
+=== 测试MLP ===
+==================================================
+测试结果(设备: cuda): 
+平均损失: 0.6277
+精确率: 0.6452
+召回率: 1.0000
+F1分数: 0.7843
+准确率: 0.6298
+==================================================
+
+=== 训练随机森林 ===
+
+=== 测试随机森林 ===
+==================================================
+随机森林测试结果:
+准确率: 0.6336
+精确率: 0.6458
+召回率: 0.9126
+F1分数: 0.7564
+==================================================
