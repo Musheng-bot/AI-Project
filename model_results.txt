@@ -52,3 +52,75 @@ Precision: 0.6429
 Recall: 0.9170
 F1 Score: 0.7559
 
+KNN Results:
+Accuracy: 0.6020
+Precision: 0.6575
+Recall: 0.7543
+F1 Score: 0.7026
+
+KNN Results:
+Accuracy: 0.5879
+Precision: 0.6653
+Recall: 0.6821
+F1 Score: 0.6736
+
+KNN Results:
+Accuracy: 0.5905
+Precision: 0.6521
+Recall: 0.7354
+F1 Score: 0.6912
+
+KNN Results:
+Accuracy: 0.6019
+Precision: 0.6526
+Recall: 0.7725
+F1 Score: 0.7075
+
+KNN Results:
+Accuracy: 0.6076
+Precision: 0.6528
+Recall: 0.7915
+F1 Score: 0.7155
+
+KNN Results:
+Accuracy: 0.6129
+Precision: 0.6515
+Recall: 0.8147
+F1 Score: 0.7240
+
+KNN Results:
+Accuracy: 0.6221
+Precision: 0.6488
+Recall: 0.8584
+F1 Score: 0.7390
+
+KNN Results:
+Accuracy: 0.6221
+Precision: 0.6488
+Recall: 0.8584
+F1 Score: 0.7390
+
+KNN Results:
+Accuracy: 0.6221
+Precision: 0.6488
+Recall: 0.8584
+F1 Score: 0.7390
+
+KNN Results:
+Accuracy: 0.6221
+Precision: 0.6488
+Recall: 0.8584
+F1 Score: 0.7390
+
+KNN Results:
+Accuracy: 0.6221
+Precision: 0.6488
+Recall: 0.8584
+F1 Score: 0.7390
+
+KNN Results:
+Accuracy: 0.6221
+Precision: 0.6488
+Recall: 0.8584
+F1 Score: 0.7390
+

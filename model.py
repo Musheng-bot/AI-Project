@@ -115,10 +115,13 @@ def decision_tree_train(X_train, y_train, X_test, y_test):
 def knn_train(X_train, y_train, X_test, y_test):
     from sklearn.neighbors import KNeighborsClassifier
 
-    knn_clf = KNeighborsClassifier(n_neighbors=5, n_jobs=-1)
+    # 离散数据，使用曼哈顿距离
+    # weights选择'distance'关注近邻中距离较近的点，以提高分类效果
+    knn_clf = KNeighborsClassifier(n_neighbors=200, weights='distance', metric='manhattan', n_jobs=-1)
     knn_clf.fit(X_train.numpy(), y_train.numpy().ravel())
     knn_pred = knn_clf.predict(X_test.numpy())
-
+    correct_proba, convince_proba = get_probabilities(knn_clf, X_test, y_test)
+        
     accuracy = accuracy_score(y_test.numpy(), knn_pred)
     precision = precision_score(y_test.numpy(), knn_pred)
     recall = recall_score(y_test.numpy(), knn_pred)
@@ -128,6 +131,9 @@ def knn_train(X_train, y_train, X_test, y_test):
     print(f"精确率: {precision:.4f}")
     print(f"召回率: {recall:.4f}")
     print(f"F1 分数: {f1:.4f}")
+    print(f"预测正确的概率平均: {correct_proba.mean():.4f}")
+    print(f"预测可信度的概率平均: {convince_proba.mean():.4f}")
+
     return knn_clf, accuracy, precision, recall, f1
 
 def naive_bayes_train(X_train, y_train, X_test, y_test):
@@ -166,6 +172,20 @@ def neural_network_train(X_train, y_train, X_test, y_test):
     print(f"F1 分数: {f1:.4f}")
     return nn_clf, accuracy, precision, recall, f1
 
+# 预测正确的概率， 预测可信度的概率
+def get_probabilities(model, X_test, y_test):
+    # 仅保留核心逻辑：提取真实标签对应概率
+    X_test_np = X_test.numpy() if hasattr(X_test, 'numpy') else X_test
+    y_test_np = y_test.numpy().astype(int) if hasattr(y_test, 'numpy') else y_test
+    y_pred = model.predict(X_test_np)
+    y_pred_np = np.array(y_pred).astype(int)
+    
+    proba = model.predict_proba(X_test_np)
+    correct_proba = [proba[i, y_test_np[i]] for i in range(len(y_test_np))]
+    convince_proba = [proba[i, y_pred_np[i]] for i in range(len(y_pred_np))]
+    return np.array(correct_proba), np.array(convince_proba)
+    
+
 train_functions = {
     'Random Forest': rf_train,
     'Logistic Regression': Logistic_regression_train,
@@ -194,9 +214,18 @@ def plot_feature_importance(model, features):
     for feature, importance in zip(features, imp):
         print(f"{feature}: {importance:.4f}")
 
+train_models = [
+    # 'Random Forest',
+    # 'Logistic Regression',
+    # 'SVM',
+    'KNN',
+    # 'Decision Tree',
+    # 'Naive Bayes',
+    # 'Neural Network'
+]
 def main():
     X_train, y_train, X_test, y_test = prepare_data()
-    for model_name in models:
+    for model_name in train_models:
         train_func = train_functions[model_name]
         model, accuracy, precision, recall, f1 = train_func(X_train, y_train, X_test, y_test)
         with open('model_results.txt', 'a') as f:
