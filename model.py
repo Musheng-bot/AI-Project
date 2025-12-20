@@ -29,11 +29,15 @@ def prepare_data():
     df = df.fillna(df.mean())
     X = df.drop('diagnosed_diabetes', axis=1).values.astype(np.float32)
     y = df['diagnosed_diabetes'].values.astype(np.float32).reshape(-1, 1)
-    scaler = StandardScaler()
-    X = scaler.fit_transform(X)
+    # scaler = StandardScaler()
+    # X = scaler.fit_transform(X)
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42, stratify=y.ravel()
     )
+    print(f"Train x : \n{X_train[:5]}")
+    print(f"Train y : \n{y_train[:5]}")
+    print(f"Test x : \n{X_test[:5]}")
+    print(f"Test y : \n{y_test[:5]}")
     return (torch.tensor(X_train), torch.tensor(y_train),
             torch.tensor(X_test), torch.tensor(y_test))
 
@@ -74,17 +78,17 @@ def plot_feature_importance(model, features):
 
 
 models = {
-    # 'Random Forest': RandomForestClassifier(n_estimators=200, max_depth=5, random_state=42, n_jobs=-1),
+    'Random Forest': RandomForestClassifier(n_estimators=200, max_depth=5, random_state=42, n_jobs=-1),
     # 'Logistic Regression': LogisticRegression(max_iter=1000, random_state=42),
     # 'SVM': SVC(kernel='linear', probability=True, random_state=42),
-    'KNN': KNeighborsClassifier(n_neighbors=200, weights='distance', metric='manhattan', n_jobs=-1),
-    # 'Decision Tree': DecisionTreeClassifier(random_state=42),
+    # 'KNN': KNeighborsClassifier(n_neighbors=200, weights='distance', metric='manhattan', n_jobs=-1),
+    'Decision Tree': DecisionTreeClassifier(random_state=42, max_depth=5, min_samples_leaf=3, criterion='entropy'),
     # 'Naive Bayes': GaussianNB(),
-    # 'Neural Network': MLPClassifier(hidden_layer_sizes=(50, 25), max_iter=500, random_state=42)
+    'Neural Network': MLPClassifier(hidden_layer_sizes=(50, 25), max_iter=500, random_state=42)
 }
 
 
-def train_model(model, X_train, y_train, X_test, y_test):
+def train_model(model_name, model, X_train, y_train, X_test, y_test):
     model.fit(X_train.numpy(), y_train.numpy().ravel())
     nb_pred = model.predict(X_test.numpy())
 
@@ -93,7 +97,7 @@ def train_model(model, X_train, y_train, X_test, y_test):
     recall = recall_score(y_test.numpy(), nb_pred)
     f1 = f1_score(y_test.numpy(), nb_pred)
     correct_proba, convince_proba = get_probabilities(model, X_test, y_test)
-    print("\n=== 朴素贝叶斯结果 ===")
+    print(f"\n=== {model_name} 结果 ===")
     print(f"准确率: {accuracy:.4f}")
     print(f"精确率: {precision:.4f}")
     print(f"召回率: {recall:.4f}")
@@ -102,11 +106,15 @@ def train_model(model, X_train, y_train, X_test, y_test):
     print(f"预测可信度的概率平均: {convince_proba.mean():.4f}")
     return model, accuracy, precision, recall, f1, correct_proba.mean(), convince_proba.mean()
 
+def n_neighbors_analysis():
+    for k in range(5, 305, 10):
+        yield k
+
 def main():
     X_train, y_train, X_test, y_test = prepare_data()
     for model_name in models:
         model = models[model_name]
-        model, accuracy, precision, recall, f1, correct_proba_mean, convince_proba_mean = train_model(model, X_train, y_train, X_test, y_test)
+        model, accuracy, precision, recall, f1, correct_proba_mean, convince_proba_mean = train_model(model_name, model, X_train, y_train, X_test, y_test)
         with open('model_results.txt', 'a') as f:
             f.write(f"{model_name} Results:\n")
             f.write(f"Accuracy: {accuracy:.4f}\n")
@@ -115,14 +123,7 @@ def main():
             f.write(f"F1 Score: {f1:.4f}\n")
             f.write(f"Correct Probability Mean: {correct_proba_mean:.4f}\n")
             f.write(f"Convince Probability Mean: {convince_proba_mean:.4f}\n\n")
-        if model_name == 'Random Forest':
-            plot_feature_importance(model, [
-                'bmi',
-                'waist_to_hip_ratio',
-                'cholesterol_total',
-                'triglycerides',
-                'family_history_diabetes'
-            ])
+
 
     
 
