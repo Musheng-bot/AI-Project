@@ -1,0 +1,54 @@
+Random Forest Results:
+Accuracy: 0.6285
+Precision: 0.6344
+Recall: 0.9533
+F1 Score: 0.7618
+
+Logistic Regression Results:
+Accuracy: 0.6293
+Precision: 0.6414
+Recall: 0.9190
+F1 Score: 0.7555
+
+Random Forest Results:
+Accuracy: 0.6285
+Precision: 0.6344
+Recall: 0.9533
+F1 Score: 0.7618
+
+Logistic Regression Results:
+Accuracy: 0.6293
+Precision: 0.6414
+Recall: 0.9190
+F1 Score: 0.7555
+
+SVM Results:
+Accuracy: 0.6233
+Precision: 0.6233
+Recall: 1.0000
+F1 Score: 0.7679
+
+KNN Results:
+Accuracy: 0.5875
+Precision: 0.6522
+Recall: 0.7247
+F1 Score: 0.6865
+
+Decision Tree Results:
+Accuracy: 0.5560
+Precision: 0.6493
+Recall: 0.6255
+F1 Score: 0.6372
+
+Naive Bayes Results:
+Accuracy: 0.5761
+Precision: 0.7219
+Recall: 0.5203
+F1 Score: 0.6048
+
+Neural Network Results:
+Accuracy: 0.6308
+Precision: 0.6429
+Recall: 0.9170
+F1 Score: 0.7559
+

@@ -78,3 +78,15 @@ n_estimators  max_depth  accuracy  precision    recall  f1_score
 3. n_estimators 从 100 加到 500，指标基本 不再变化，说明树数已饱和。
 
 选择n_estimator=200, max_depth=5 
+
+尝试了更多的模型
+
+| Model             | Accuracy | Precision | Recall  | F1 Score |
+|-------------------|----------|-----------|---------|----------|
+| Random Forest     | 0.6285   | 0.6344    | 0.9533  | 0.7618   |
+| Logistic Regression| 0.6293  | 0.6414    | 0.9190  | 0.7555   |
+| SVM               | 0.6233   | 0.6233    | 1.0000  | 0.7679   |
+| KNN               | 0.5875   | 0.6522    | 0.7247  | 0.6865   |
+| Decision Tree     | 0.5560   | 0.6493    | 0.6255  | 0.6372   |
+| Naive Bayes       | 0.5761   | 0.7219    | 0.5203  | 0.6048   |
+| Neural Network    | 0.6308   | 0.6429    | 0.9170  | 0.7559   |
