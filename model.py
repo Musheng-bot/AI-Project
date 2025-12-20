@@ -32,10 +32,10 @@ class MLP(nn.Module):
         self.model = nn.Sequential(
             nn.Linear(in_features=in_channels, out_features=hidden_dim, bias=True),
             nn.ReLU(),
-            nn.Dropout(0.2),  # 防止过拟合
+            # nn.Dropout(0.2),  # 防止过拟合
             nn.Linear(in_features=hidden_dim, out_features=hidden_dim // 2, bias=True),
             nn.ReLU(),
-            nn.Dropout(0.2),
+            # nn.Dropout(0.2),
             nn.Linear(in_features=hidden_dim // 2, out_features=out_channels, bias=True),
             nn.Sigmoid(),  # 二分类最终输出Sigmoid
         )
@@ -268,6 +268,9 @@ def main():
     scaler = StandardScaler()
     X_scaled = scaler.fit_transform(X)
 
+    print(f"\n特征形状: {X_scaled.shape}, 标签形状: {y.shape}")
+    print(f"标准化后数据示例 (前5行):\n{X_scaled[:5]}")
+
     # 划分训练集和测试集
     X_train, X_test, y_train, y_test = train_test_split(
         X_scaled, y, test_size=0.2, random_state=42, stratify=y
@@ -287,7 +290,7 @@ def main():
         features=X_train_tensor,
         labels=y_train_tensor,
         loss_fn=nn.BCELoss(reduction='mean'),
-        lr=0.01,
+        lr=0.8,
         epoch_num=EPOCH_NUM,
         name="lg"
     )
@@ -302,7 +305,7 @@ def main():
         features=X_train_tensor,
         labels=y_train_tensor,
         loss_fn=nn.BCELoss(reduction='mean'),
-        lr=0.001,  # MLP学习率更小
+        lr=0.2,  # MLP学习率更小
         epoch_num=EPOCH_NUM,
         name="mlp"
     )
