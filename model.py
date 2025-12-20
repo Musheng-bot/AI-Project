@@ -2,328 +2,124 @@ import numpy as np
 import pandas as pd
 import torch
 import torch.nn as nn
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, confusion_matrix, precision_score, recall_score, f1_score
-from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler  # 数据标准化
-from torch import optim
+import torch.optim as optim
 from torch.utils.data import TensorDataset, DataLoader
-
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
 ALPHA = 0.5
 EPOCH_NUM = 200
-
-# 逻辑斯蒂回归（二分类专用）
-class LGRegression(nn.Module):
-    def __init__(self, in_channels: int, out_channels: int = 1):
-        super().__init__()
-        self.model = nn.Sequential(
-            nn.Linear(in_features=in_channels, out_features=out_channels, bias=True),
-            nn.Sigmoid(),
-        )
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.model(x)
-
-
-# 多层感知机（MLP）二分类
 class MLP(nn.Module):
-    def __init__(self, in_channels: int, hidden_dim: int = 64, out_channels: int = 1):
+    def __init__(self, in_channels, hidden_dim=64, out_channels=1):
         super().__init__()
-        self.model = nn.Sequential(
-            nn.Linear(in_features=in_channels, out_features=hidden_dim, bias=True),
+        self.net = nn.Sequential(
+            nn.Linear(in_channels, hidden_dim),
             nn.ReLU(),
-            # nn.Dropout(0.2),  # 防止过拟合
-            nn.Linear(in_features=hidden_dim, out_features=hidden_dim // 2, bias=True),
+            nn.Linear(hidden_dim, hidden_dim // 2),
             nn.ReLU(),
-            # nn.Dropout(0.2),
-            nn.Linear(in_features=hidden_dim // 2, out_features=out_channels, bias=True),
-            nn.Sigmoid(),  # 二分类最终输出Sigmoid
+            nn.Linear(hidden_dim // 2, out_channels)          # 直接输出 logit
         )
-
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        return self.model(x)
-
-
-def train_model(
-        model: nn.Module,
-        features: torch.Tensor,
-        labels: torch.Tensor,
-        loss_fn,
-        name: str,
-        lr: float = 0.01,
-        batch_size: int = 256,
-        epoch_num: int = 100
-) -> nn.Module:
-    """
-    训练模型（适配二分类任务）
-    :param model: 模型实例
-    :param features: 特征张量 [样本数, 特征数]
-    :param labels: 标签张量 [样本数, 1] (float类型，0/1)
-    :param loss_fn: 损失函数（BCELoss）
-    :param lr: 学习率
-    :param batch_size: 批次大小
-    :param epoch_num: 训练轮数
-    :return: 训练好的模型
-    """
-
+    def forward(self, x):
+        return self.net(x)      # raw logits
+def train_model(model, features, labels, loss_fn, lr=1e-3, batch_size=256, epoch_num=EPOCH_NUM):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"使用设备: {device}")
-
-    # device = torch.device("cpu")
-
-    # 模型准备
     model.train()
     model = model.to(device)
-
-    # 优化器（添加L2正则化）
-    optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=1e-4)  # Adam比SGD更适合MLP
-
-    # 数据加载器
+    optimizer = optim.Adam(model.parameters(), lr=lr, weight_decay=1e-4)
     dataset = TensorDataset(features, labels)
-    dataloader = DataLoader(
-        dataset,
-        batch_size=batch_size,
-        shuffle=True,
-        drop_last=False,
-        num_workers=8,
-    )
-
-    # 训练循环
-    for epoch in range(epoch_num):
-        total_loss: float = 0.0
-        batch_count: int = 0
-
-        for feature, label in dataloader:
-            # 数据移到设备
-            feature = feature.to(device, non_blocking=True)
-            label = label.to(device, non_blocking=True)
-
-            # 前向传播
-            output = model(feature)
-
-            # 计算损失
-            loss = loss_fn(output, label)
-
-            # 反向传播
+    loader = DataLoader(dataset, batch_size=batch_size, shuffle=True, num_workers=0)
+    for epoch in range(1, epoch_num+1):
+        total_loss = 0.0
+        for feat, lbl in loader:
+            feat, lbl = feat.to(device), lbl.to(device)
+            logits = model(feat)
+            loss = loss_fn(logits, lbl)
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-
-            # 累计损失
-            total_loss += loss.item()
-            batch_count += 1
-
-        # 打印进度
-        if (epoch + 1) % 10 == 0:
-            avg_loss = total_loss / batch_count if batch_count > 0 else 0.0
-            print(f"Epoch {(epoch + 1)}/{epoch_num} | Average loss: {avg_loss:.4f}")
-    torch.save(model.state_dict(), f'trained_model_{name}.pth')
+            total_loss += loss.item() * feat.size(0)
+        if epoch % 10 == 0:
+            print(f"Epoch {epoch}/{epoch_num} | Loss: {total_loss/len(loader.dataset):.4f}")
+    torch.save(model.state_dict(), f'{model.__class__.__name__}.pth')
     return model
-
-
-def test_model(
-        model: nn.Module,
-        features: torch.Tensor,
-        labels: torch.Tensor,
-        batch_size: int = 64,
-) -> None:
-    """
-    测试模型（二分类）
-    :param model: 训练好的模型
-    :param features: 测试特征 [样本数, 特征数]
-    :param labels: 测试标签 [样本数, 1] (float类型)
-    :param batch_size: 批次大小
-    """
+def test_model(model, features, labels):
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-    # device = torch.device("cpu")
     model.eval()
     model = model.to(device)
-
-    # 数据加载器
     dataset = TensorDataset(features, labels)
-    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=False, num_workers=8)
-
-    # 损失函数
-    loss_fn = nn.BCELoss(reduction='mean')
-
+    loader = DataLoader(dataset, batch_size=64, shuffle=False, num_workers=0)
+    loss_fn = nn.BCEWithLogitsLoss()
+    total_loss = 0.0
+    total_samples = 0
+    correct = 0
+    tp = fp = fn = 0
     with torch.no_grad():
-        total_loss: float = 0.0
-        total_samples: int = 0
-        correct_num: int = 0
-
-        for feature, label in dataloader:
-            feature = feature.to(device, non_blocking=True)
-            label = label.to(device, non_blocking=True)
-
-            # 前向传播
-            output = model(feature)
-
-            # 计算损失
-            loss = loss_fn(output, label)
-            total_loss += loss.item() * label.shape[0]
-            total_samples += label.shape[0]
-
-            predicted = (output > ALPHA).float()
-            correct_num += (predicted == label).sum().item()
-
-            false_negative = ((1 - predicted) * label).sum().item()
-            true_positive = (predicted * label).sum().item()
-            false_positive = (predicted * (1 - label)).sum().item()
-            true_negative = ((1 - predicted) * (1 - label)).sum().item()
-
-        # 计算指标
-        accuracy = correct_num / total_samples
-        precision = true_positive / (true_positive + false_positive + 1e-8)
-        recall_rate = true_positive / (true_positive + false_negative + 1e-8)
-        average_loss = total_loss / total_samples
-        f1_score = 2 * (precision * recall_rate) / (precision + recall_rate + 1e-8)
-
-        print("=" * 50)
-        print(f"测试结果(设备: {device}): ")
-        print(f"平均损失: {average_loss:.4f}")
-        print(f"精确率: {precision:.4f}") # 测的阳性中有多少人是真的阳性
-        print(f"召回率: {recall_rate:.4f}") # 实际阳性中有多少人被正确识别为阳性
-        print(f"F1分数: {f1_score:.4f}") # 综合考虑精确率和召回率
-        print(f"准确率: {accuracy:.4f}")
-        print("=" * 50)
-
-
-def train_rf(
-        features: np.ndarray,
-        labels: np.ndarray,
-        test_size: float = 0.2
-) -> tuple:
-    """
-    训练随机森林（sklearn版本）
-    :param features: 特征数组 [样本数, 特征数]
-    :param labels: 标签数组 [样本数] (int类型)
-    :param test_size: 测试集比例
-    :return: 训练好的分类器、测试特征、测试标签
-    """
-    # 划分数据集
-    feature_train, feature_test, label_train, label_test = train_test_split(
-        features, labels, test_size=test_size, random_state=42, stratify=labels  # stratify保持类别分布
-    )
-
-    # 训练随机森林
-    classifier = RandomForestClassifier(
-        n_estimators=100,
-        max_depth=10,
-        random_state=42,
-        n_jobs=-1  # 多线程
-    )
-    classifier.fit(feature_train, label_train)
-
-    return classifier, feature_test, label_test
-
-
-def test_rf(
-        classifier: RandomForestClassifier,
-        features: np.ndarray,
-        labels: np.ndarray
-) -> None:
-    """
-    测试随机森林
-    :param classifier: 训练好的随机森林
-    :param features: 测试特征
-    :param labels: 测试标签
-    """
-    prediction = classifier.predict(features)
-    accuracy = accuracy_score(labels, prediction)
-    precision = precision_score(labels, prediction)
-    recall_rate = recall_score(labels, prediction)
-    f1 = f1_score(labels, prediction)
-
-    print("=" * 50)
-    print("随机森林测试结果:")
-    print(f"准确率: {accuracy:.4f}")
-    print(f"精确率: {precision:.4f}")
-    print(f"召回率: {recall_rate:.4f}")
-    print(f"F1分数: {f1:.4f}")
-    print("=" * 50)
-
-
-def main():
-    # 1. 数据加载与预处理
+        for feat, lbl in loader:
+            feat, lbl = feat.to(device), lbl.to(device)
+            logits = model(feat)
+            probs = torch.sigmoid(logits)
+            loss = loss_fn(logits, lbl)
+            total_loss += loss.item() * feat.size(0)
+            total_samples += feat.size(0)
+            preds = (probs > ALPHA).float()
+            correct += (preds == lbl).sum().item()
+            tp += ((preds == 1) & (lbl == 1)).sum().item()
+            fp += ((preds == 1) & (lbl == 0)).sum().item()
+            fn += ((preds == 0) & (lbl == 1)).sum().item()
+    acc = correct / total_samples
+    prec = tp / (tp + fp + 1e-8)
+    rec  = tp / (tp + fn + 1e-8)
+    f1   = 2 * (prec * rec) / (prec + rec + 1e-8)
+    avg_loss = total_loss / total_samples
+    print("\n=== 测试结果 ===")
+    print(f"平均损失: {avg_loss:.4f}")
+    print(f"精确率: {prec:.4f}")
+    print(f"召回率: {rec:.4f}")
+    print(f"F1 分数: {f1:.4f}")
+    print(f"准确率: {acc:.4f}")
+def prepare_data():
     df = pd.read_csv(
         'data/train.csv',
-        # nrows=1000,  # 测试用小样本，实际可去掉
-        usecols=['bmi', 'waist_to_hip_ratio', 'cholesterol_total',
-                 'triglycerides', 'family_history_diabetes', 'diagnosed_diabetes']
+        usecols=[
+            'bmi',
+            'waist_to_hip_ratio',
+            'cholesterol_total',
+            'triglycerides',
+            'family_history_diabetes',
+            'diagnosed_diabetes'
+        ]
     )
-
-    # 处理缺失值（关键！）
-    df = df.fillna(df.mean())  # 用均值填充缺失值
-
-    print("数据基本信息:")
-    print(df.info())
-    print("\n前5行数据:")
-    print(df.head())
-
-    # 2. 特征和标签分离
+    # 先把缺失值填完
+    df = df.fillna(df.mean())
     X = df.drop('diagnosed_diabetes', axis=1).values.astype(np.float32)
-    y = df['diagnosed_diabetes'].values.astype(np.float32).reshape(-1, 1)  # [样本数, 1]
-
-    # 数据标准化（对神经网络至关重要）
+    y = df['diagnosed_diabetes'].values.astype(np.float32).reshape(-1, 1)
     scaler = StandardScaler()
-    X_scaled = scaler.fit_transform(X)
-
-    print(f"\n特征形状: {X_scaled.shape}, 标签形状: {y.shape}")
-    print(f"标准化后数据示例 (前5行):\n{X_scaled[:5]}")
-
-    # 划分训练集和测试集
+    X = scaler.fit_transform(X)
     X_train, X_test, y_train, y_test = train_test_split(
-        X_scaled, y, test_size=0.2, random_state=42, stratify=y
+        X, y, test_size=0.2, random_state=42, stratify=y.ravel()
     )
-
-    # 转换为PyTorch张量
-    X_train_tensor = torch.tensor(X_train)
-    y_train_tensor = torch.tensor(y_train)
-    X_test_tensor = torch.tensor(X_test)
-    y_test_tensor = torch.tensor(y_test)
-
-    # 3. 训练并测试逻辑斯蒂回归
-    print("\n=== 训练逻辑斯蒂回归 ===")
-    lg_model = LGRegression(in_channels=X_train.shape[1])
-    lg_model = train_model(
-        model=lg_model,
-        features=X_train_tensor,
-        labels=y_train_tensor,
-        loss_fn=nn.BCELoss(reduction='mean'),
-        lr=0.8,
-        epoch_num=EPOCH_NUM,
-        name="lg"
+    return (torch.tensor(X_train), torch.tensor(y_train),
+            torch.tensor(X_test), torch.tensor(y_test))
+def main():
+    X_train, y_train, X_test, y_test = prepare_data()
+    # 训练 MLP
+    mlp = MLP(in_channels=X_train.shape[1])
+    loss_fn = nn.BCEWithLogitsLoss()
+    mlp = train_model(mlp, X_train, y_train, loss_fn, lr=0.1, epoch_num=EPOCH_NUM)
+    # 测试
+    test_model(mlp, X_test, y_test)
+    # 随机森林（不用标准化）
+    rf_clf = RandomForestClassifier(
+        n_estimators=200, max_depth=15, random_state=42, n_jobs=-1
     )
-    print("\n=== 测试逻辑斯蒂回归 ===")
-    test_model(lg_model, X_test_tensor, y_test_tensor)
-
-    # 4. 训练并测试MLP
-    print("\n=== 训练MLP ===")
-    mlp_model = MLP(in_channels=X_train.shape[1], hidden_dim=64)
-    mlp_model = train_model(
-        model=mlp_model,
-        features=X_train_tensor,
-        labels=y_train_tensor,
-        loss_fn=nn.BCELoss(reduction='mean'),
-        lr=0.2,  # MLP学习率更小
-        epoch_num=EPOCH_NUM,
-        name="mlp"
-    )
-    print("\n=== 测试MLP ===")
-    test_model(mlp_model, X_test_tensor, y_test_tensor)
-
-    # 5. 训练并测试随机森林（sklearn版本）
-    print("\n=== 训练随机森林 ===")
-    # 随机森林不需要标准化（可选），标签转回一维int
-    rf_classifier, rf_X_test, rf_y_test = train_rf(
-        features=X,  # 原始特征（随机森林对尺度不敏感）
-        labels=df['diagnosed_diabetes'].values.astype(int)  # 一维int标签
-    )
-    print("\n=== 测试随机森林 ===")
-    test_rf(rf_classifier, rf_X_test, rf_y_test)
-
-    return 0
-
-
-if __name__ == '__main__':
+    rf_clf.fit(X_train.numpy(), y_train.numpy().ravel())
+    rf_pred = rf_clf.predict(X_test.numpy())
+    print("\n=== 随机森林结果 ===")
+    print(f"准确率: {accuracy_score(y_test.numpy(), rf_pred):.4f}")
+    print(f"精确率: {precision_score(y_test.numpy(), rf_pred):.4f}")
+    print(f"召回率: {recall_score(y_test.numpy(), rf_pred):.4f}")
+    print(f"F1 分数: {f1_score(y_test.numpy(), rf_pred):.4f}")
+if __name__ == "__main__":
     main()
