@@ -142,8 +142,14 @@ n_estimators  max_depth  accuracy  precision    recall  f1_score
 
 ---
 
-## Decision Tree
+## Phase2总结
+
+这几个模型的表现都很糟糕说实话，准确率都比较低，有些甚至有基本啥也没学到的情况
 
 ## 规划
 
 准备`XGBoost`, `LightGBM`的部署，并且学习其他参赛者的模型
+
+## Phase3
+
+节点无法通过分裂实现有效优化

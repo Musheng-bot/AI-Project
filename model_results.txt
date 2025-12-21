@@ -1,407 +1,64 @@
-KNN Results:
-n_neighbors: 5
-Accuracy: 0.5821
-Precision: 0.6530
-Recall: 0.7031
-F1 Score: 0.6771
-Correct Probability Mean: 0.5610
-Convince Probability Mean: 0.7658
-
-KNN Results:
-n_neighbors: 15
-Accuracy: 0.5980
-Precision: 0.6529
-Recall: 0.7578
-F1 Score: 0.7015
-Correct Probability Mean: 0.5609
-Convince Probability Mean: 0.7133
-
-KNN Results:
-n_neighbors: 25
-Accuracy: 0.6054
-Precision: 0.6530
-Recall: 0.7829
-F1 Score: 0.7121
-Correct Probability Mean: 0.5608
-Convince Probability Mean: 0.6995
-
-KNN Results:
-n_neighbors: 35
-Accuracy: 0.6092
-Precision: 0.6524
-Recall: 0.7984
-F1 Score: 0.7181
-Correct Probability Mean: 0.5610
-Convince Probability Mean: 0.6929
-
-KNN Results:
-n_neighbors: 45
-Accuracy: 0.6121
-Precision: 0.6519
-Recall: 0.8106
-F1 Score: 0.7226
-Correct Probability Mean: 0.5611
-Convince Probability Mean: 0.6889
-
-KNN Results:
-n_neighbors: 55
-Accuracy: 0.6142
-Precision: 0.6515
-Recall: 0.8194
-F1 Score: 0.7259
-Correct Probability Mean: 0.5610
-Convince Probability Mean: 0.6862
-
-KNN Results:
-n_neighbors: 65
-Accuracy: 0.6160
-Precision: 0.6513
-Recall: 0.8261
-F1 Score: 0.7284
-Correct Probability Mean: 0.5611
-Convince Probability Mean: 0.6843
-
-KNN Results:
-n_neighbors: 75
-Accuracy: 0.6169
-Precision: 0.6509
-Recall: 0.8312
-F1 Score: 0.7301
-Correct Probability Mean: 0.5611
-Convince Probability Mean: 0.6828
-
-KNN Results:
-n_neighbors: 85
-Accuracy: 0.6177
-Precision: 0.6505
-Recall: 0.8356
-F1 Score: 0.7315
-Correct Probability Mean: 0.5611
-Convince Probability Mean: 0.6816
-
-KNN Results:
-n_neighbors: 95
-Accuracy: 0.6185
-Precision: 0.6502
-Recall: 0.8396
-F1 Score: 0.7329
-Correct Probability Mean: 0.5611
-Convince Probability Mean: 0.6807
-
-KNN Results:
-n_neighbors: 105
-Accuracy: 0.6192
-Precision: 0.6501
-Recall: 0.8428
-F1 Score: 0.7340
-Correct Probability Mean: 0.5610
-Convince Probability Mean: 0.6799
-
-KNN Results:
-n_neighbors: 115
-Accuracy: 0.6198
-Precision: 0.6499
-Recall: 0.8452
-F1 Score: 0.7348
-Correct Probability Mean: 0.5610
-Convince Probability Mean: 0.6792
-
-KNN Results:
-n_neighbors: 125
-Accuracy: 0.6204
-Precision: 0.6499
-Recall: 0.8477
-F1 Score: 0.7357
-Correct Probability Mean: 0.5610
-Convince Probability Mean: 0.6787
-
-KNN Results:
-n_neighbors: 135
-Accuracy: 0.6207
-Precision: 0.6497
-Recall: 0.8495
-F1 Score: 0.7363
-Correct Probability Mean: 0.5610
-Convince Probability Mean: 0.6782
-
-KNN Results:
-n_neighbors: 145
-Accuracy: 0.6214
-Precision: 0.6498
-Recall: 0.8515
-F1 Score: 0.7371
-Correct Probability Mean: 0.5610
-Convince Probability Mean: 0.6778
-
-KNN Results:
-n_neighbors: 155
-Accuracy: 0.6214
-Precision: 0.6495
-Recall: 0.8526
-F1 Score: 0.7374
-Correct Probability Mean: 0.5610
-Convince Probability Mean: 0.6775
-
-KNN Results:
-n_neighbors: 165
-Accuracy: 0.6220
+=== XGBoost Results ===
+Accuracy: 0.6367
 Precision: 0.6496
-Recall: 0.8546
-F1 Score: 0.7381
-Correct Probability Mean: 0.5610
-Convince Probability Mean: 0.6772
+Recall: 0.9057
+F1 Score: 0.7565
+Correct Probability Mean: 0.5630
+Convince Probability Mean: 0.6362
 
-KNN Results:
-n_neighbors: 175
-Accuracy: 0.6221
-Precision: 0.6494
-Recall: 0.8557
-F1 Score: 0.7384
-Correct Probability Mean: 0.5610
-Convince Probability Mean: 0.6769
+=== LightGBM Results ===
+Accuracy: 0.6370
+Precision: 0.6500
+Recall: 0.9044
+F1 Score: 0.7564
+Correct Probability Mean: 0.5631
+Convince Probability Mean: 0.6363
 
-KNN Results:
-n_neighbors: 185
-Accuracy: 0.6223
-Precision: 0.6493
-Recall: 0.8570
-F1 Score: 0.7388
-Correct Probability Mean: 0.5610
-Convince Probability Mean: 0.6767
+=== XGBoost Results ===
+Accuracy: 0.6367
+Precision: 0.6496
+Recall: 0.9057
+F1 Score: 0.7565
+Correct Probability Mean: 0.5630
+Convince Probability Mean: 0.6362
 
-KNN Results:
-n_neighbors: 195
-Accuracy: 0.6223
-Precision: 0.6490
-Recall: 0.8581
-F1 Score: 0.7390
-Correct Probability Mean: 0.5610
-Convince Probability Mean: 0.6764
+=== LightGBM Results ===
+Accuracy: 0.6368
+Precision: 0.6499
+Recall: 0.9045
+F1 Score: 0.7563
+Correct Probability Mean: 0.5630
+Convince Probability Mean: 0.6363
 
-KNN Results:
-n_neighbors: 205
-Accuracy: 0.6221
-Precision: 0.6487
-Recall: 0.8588
-F1 Score: 0.7391
-Correct Probability Mean: 0.5609
-Convince Probability Mean: 0.6762
+=== XGBoost Results ===
+Accuracy: 0.6367
+Precision: 0.6496
+Recall: 0.9057
+F1 Score: 0.7565
+Correct Probability Mean: 0.5630
+Convince Probability Mean: 0.6362
 
-KNN Results:
-n_neighbors: 215
-Accuracy: 0.6225
-Precision: 0.6488
-Recall: 0.8597
-F1 Score: 0.7395
-Correct Probability Mean: 0.5609
-Convince Probability Mean: 0.6761
+=== LightGBM Results ===
+Accuracy: 0.6368
+Precision: 0.6499
+Recall: 0.9045
+F1 Score: 0.7563
+Correct Probability Mean: 0.5630
+Convince Probability Mean: 0.6363
 
-KNN Results:
-n_neighbors: 225
-Accuracy: 0.6227
-Precision: 0.6487
-Recall: 0.8608
-F1 Score: 0.7399
-Correct Probability Mean: 0.5609
-Convince Probability Mean: 0.6759
+=== XGBoost Results ===
+Accuracy: 0.6367
+Precision: 0.6496
+Recall: 0.9057
+F1 Score: 0.7565
+Correct Probability Mean: 0.5630
+Convince Probability Mean: 0.6362
 
-KNN Results:
-n_neighbors: 235
-Accuracy: 0.6226
-Precision: 0.6486
-Recall: 0.8612
-F1 Score: 0.7399
-Correct Probability Mean: 0.5609
-Convince Probability Mean: 0.6757
-
-KNN Results:
-n_neighbors: 245
-Accuracy: 0.6231
-Precision: 0.6487
-Recall: 0.8622
-F1 Score: 0.7404
-Correct Probability Mean: 0.5609
-Convince Probability Mean: 0.6756
-
-KNN Results:
-n_neighbors: 255
-Accuracy: 0.6233
-Precision: 0.6487
-Recall: 0.8631
-F1 Score: 0.7407
-Correct Probability Mean: 0.5609
-Convince Probability Mean: 0.6754
-
-KNN Results:
-n_neighbors: 265
-Accuracy: 0.6232
-Precision: 0.6484
-Recall: 0.8638
-F1 Score: 0.7408
-Correct Probability Mean: 0.5609
-Convince Probability Mean: 0.6753
-
-KNN Results:
-n_neighbors: 275
-Accuracy: 0.6231
-Precision: 0.6483
-Recall: 0.8639
-F1 Score: 0.7407
-Correct Probability Mean: 0.5609
-Convince Probability Mean: 0.6752
-
-KNN Results:
-n_neighbors: 285
-Accuracy: 0.6233
-Precision: 0.6483
-Recall: 0.8646
-F1 Score: 0.7410
-Correct Probability Mean: 0.5609
-Convince Probability Mean: 0.6751
-
-KNN Results:
-n_neighbors: 295
-Accuracy: 0.6234
-Precision: 0.6483
-Recall: 0.8650
-F1 Score: 0.7411
-Correct Probability Mean: 0.5608
-Convince Probability Mean: 0.6750
-
-Decision Tree Results:
-Decision Tree Results:
-Accuracy: 0.6273
-Precision: 0.6350
-Recall: 0.9454
-F1 Score: 0.7597
-Correct Probability Mean: 0.5589
-Convince Probability Mean: 0.6285
-
-Decision Tree Results:
-Accuracy: 0.6273
-Precision: 0.6350
-Recall: 0.9454
-F1 Score: 0.7597
-Correct Probability Mean: 0.5589
-Convince Probability Mean: 0.6285
-
-Decision Tree Results:
-Accuracy: 0.6318
-Precision: 0.6464
-Recall: 0.9036
-F1 Score: 0.7536
-Correct Probability Mean: 0.5614
-Convince Probability Mean: 0.6361
-
-Decision Tree Results:
-Accuracy: 0.6233
-Precision: 0.6233
-Recall: 1.0000
-F1 Score: 0.7679
-Correct Probability Mean: 0.5548
-Convince Probability Mean: 0.6234
-
-Decision Tree Results:
-Accuracy: 0.6233
-Precision: 0.6233
-Recall: 1.0000
-F1 Score: 0.7679
-Correct Probability Mean: 0.5564
-Convince Probability Mean: 0.6233
-
-Decision Tree Results:
-Accuracy: 0.6233
-Precision: 0.6233
-Recall: 1.0000
-F1 Score: 0.7679
-Correct Probability Mean: 0.5515
-Convince Probability Mean: 0.6235
-
-Decision Tree Results:
-Accuracy: 0.6233
-Precision: 0.6233
-Recall: 1.0000
-F1 Score: 0.7679
-Correct Probability Mean: 0.5515
-Convince Probability Mean: 0.6235
-
-Decision Tree Results:
-Accuracy: 0.6233
-Precision: 0.6233
-Recall: 1.0000
-F1 Score: 0.7679
-Correct Probability Mean: 0.5515
-Convince Probability Mean: 0.6235
-
-Decision Tree Results:
-Accuracy: 0.6273
-Precision: 0.6350
-Recall: 0.9454
-F1 Score: 0.7597
-Correct Probability Mean: 0.5589
-Convince Probability Mean: 0.6285
-
-Decision Tree Results:
-Accuracy: 0.6273
-Precision: 0.6350
-Recall: 0.9454
-F1 Score: 0.7597
-Correct Probability Mean: 0.5589
-Convince Probability Mean: 0.6285
-
-Decision Tree Results:
-Accuracy: 0.6273
-Precision: 0.6350
-Recall: 0.9454
-F1 Score: 0.7597
-Correct Probability Mean: 0.5589
-Convince Probability Mean: 0.6285
-
-Decision Tree Results:
-Accuracy: 0.6273
-Precision: 0.6350
-Recall: 0.9454
-F1 Score: 0.7597
-Correct Probability Mean: 0.5589
-Convince Probability Mean: 0.6285
-
-Random Forest Results:
-Accuracy: 0.6285
-Precision: 0.6344
-Recall: 0.9533
-F1 Score: 0.7618
-Correct Probability Mean: 0.5569
-Convince Probability Mean: 0.6254
-
-Decision Tree Results:
-Accuracy: 0.6273
-Precision: 0.6350
-Recall: 0.9454
-F1 Score: 0.7597
-Correct Probability Mean: 0.5589
-Convince Probability Mean: 0.6285
-
-Random Forest Results:
-Accuracy: 0.6285
-Precision: 0.6344
-Recall: 0.9533
-F1 Score: 0.7618
-Correct Probability Mean: 0.5569
-Convince Probability Mean: 0.6254
-
-Decision Tree Results:
-Accuracy: 0.6273
-Precision: 0.6350
-Recall: 0.9454
-F1 Score: 0.7597
-Correct Probability Mean: 0.5589
-Convince Probability Mean: 0.6285
-
-Neural Network Results:
-Accuracy: 0.6296
-Precision: 0.6444
-Recall: 0.9052
-F1 Score: 0.7528
-Correct Probability Mean: 0.5564
-Convince Probability Mean: 0.6199
+=== LightGBM Results ===
+Accuracy: 0.6368
+Precision: 0.6499
+Recall: 0.9045
+F1 Score: 0.7563
+Correct Probability Mean: 0.5630
+Convince Probability Mean: 0.6363
 

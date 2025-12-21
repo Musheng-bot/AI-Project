@@ -13,6 +13,8 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.neural_network import MLPClassifier
+from xgboost import XGBClassifier
+from lightgbm import LGBMClassifier
 
 def prepare_data():
     df = pd.read_csv(
@@ -77,14 +79,53 @@ def plot_feature_importance(model, features):
         print(f"{feature}: {importance:.4f}")
 
 
+lgb_params = {
+    'objective': 'binary',
+    'metric': 'auc',
+    'boosting_type': 'gbdt',
+    'n_estimators': 2500,
+    'learning_rate': 0.03,
+    'num_leaves': 90,
+    'max_depth': 9,
+    'min_child_samples': 40,
+    'subsample': 0.85,
+    'colsample_bytree': 0.78,
+    'reg_alpha': 0.1,
+    'reg_lambda': 0.3,
+    'scale_pos_weight': 0.6,
+    'random_state': 42,
+    'n_jobs': -1,
+    'verbose': -1,
+    'device': 'gpu'
+}
+
+xgb_params = {
+    'n_estimators': 2200,
+    'learning_rate': 0.03,
+    'max_depth': 8,
+    'subsample': 0.8,
+    'colsample_bytree': 0.78,
+    'gamma': 0.1,
+    'reg_alpha': 0.1,
+    'reg_lambda': 1.0,
+    'scale_pos_weight': 0.6,
+    'random_state': 42,
+    'n_jobs': -1,
+    'eval_metric': 'auc',
+    'tree_method': 'hist',
+    'device': 'cuda'
+}
+
 models = {
-    'Random Forest': RandomForestClassifier(n_estimators=200, max_depth=5, random_state=42, n_jobs=-1),
+    # 'Random Forest': RandomForestClassifier(n_estimators=200, max_depth=5, random_state=42, n_jobs=-1),
     # 'Logistic Regression': LogisticRegression(max_iter=1000, random_state=42),
     # 'SVM': SVC(kernel='linear', probability=True, random_state=42),
     # 'KNN': KNeighborsClassifier(n_neighbors=200, weights='distance', metric='manhattan', n_jobs=-1),
-    'Decision Tree': DecisionTreeClassifier(random_state=42, max_depth=5, min_samples_leaf=3, criterion='entropy'),
+    # 'Decision Tree': DecisionTreeClassifier(random_state=42, max_depth=5, min_samples_leaf=3, criterion='entropy'),
     # 'Naive Bayes': GaussianNB(),
-    'Neural Network': MLPClassifier(hidden_layer_sizes=(50, 25), max_iter=500, random_state=42)
+    # 'Neural Network': MLPClassifier(hidden_layer_sizes=(50, 25), max_iter=500, random_state=42),
+    'XGBoost': XGBClassifier(n_estimators=200, max_depth=5, learning_rate=0.1, eval_metric='logloss', random_state=42),
+    'LightGBM': LGBMClassifier(**lightgbm_params)
 }
 
 
@@ -116,7 +157,7 @@ def main():
         model = models[model_name]
         model, accuracy, precision, recall, f1, correct_proba_mean, convince_proba_mean = train_model(model_name, model, X_train, y_train, X_test, y_test)
         with open('model_results.txt', 'a') as f:
-            f.write(f"{model_name} Results:\n")
+            f.write(f"=== {model_name} Results ===\n")
             f.write(f"Accuracy: {accuracy:.4f}\n")
             f.write(f"Precision: {precision:.4f}\n")
             f.write(f"Recall: {recall:.4f}\n")
