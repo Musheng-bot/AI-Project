@@ -160,3 +160,32 @@ n_estimators  max_depth  accuracy  precision    recall  f1_score
 节点无法通过分裂实现有效优化，这是没有调参的版本，说实话表现很一般，甚至不如全猜阳性，先前我们认为，只取部分数据\['bmi','waist_to_hip_ratio','cholesterol_total','triglycerides','family_history_diabetes','diagnosed_diabetes'\]，这些关联度更大的数据会有比较好的结果，但是最后反映出来的是，我们的模型表现很烂，因此我们放弃这样的做法，尝试使用更多的数据列。
 
 ## Phase4
+
+用全部的数据直接输入XGBoost模型训练得到结果
+
+移除了部分数据列，发现基本没有影响
+
+```yaml
+# === XGBoost Classifier Performance ===
+Accuracy: 0.6832
+Precision: 0.7056
+Recall: 0.8449
+F1 Score: 0.7690
+ROC AUC Score: 0.7241
+
+# === LightGBM Classifier Performance ===
+Accuracy: 0.6834
+Precision: 0.7072
+Recall: 0.8410
+F1 Score: 0.7683
+ROC AUC Score: 0.7238
+
+# === CatBoost Classifier Performance ===
+Accuracy: 0.6803
+Precision: 0.7006
+Recall: 0.8518
+F1 Score: 0.7688
+ROC AUC Score: 0.7218
+```
+
+感觉是比之前的结果明显好一点
