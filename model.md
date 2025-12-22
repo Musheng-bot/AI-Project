@@ -202,9 +202,29 @@ n_estimators  max_depth  accuracy  precision    recall  f1_score
 
 ## Phase5
 
-学习了别人的代码，打算分箱试试看
-同时要引入KFold了
+引入KFold
 
-- 分箱
+我们修改了大量代码，引入了5折交叉验证，我们在5次训练中每次都选取最好的模型，然后将其对其五次训练结果取平均
+
+```yaml
+# === CatBoost Classifier Performance ===
+Accuracy: 0.6832
+Precision: 0.7057
+Recall: 0.8435
+F1 Score: 0.7685
+ROC AUC: 0.7255
+
+# === LightGBM Classifier Performance ===
+准确率: 0.6842
+精确率: 0.7089
+召回率: 0.8369
+F1 分数: 0.7676
+ROC AUC: 0.7267
+预测的自信程度: 0.6244
+```
+
+结果我们发现这个模型本身的表现实际上相比Phase4提出的结果没有更大的突破， KFold并没有能优化我们的模型到更好的程度
+
+接下来尝试分箱操作
 
 
