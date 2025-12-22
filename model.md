@@ -203,5 +203,8 @@ n_estimators  max_depth  accuracy  precision    recall  f1_score
 ## Phase5
 
 学习了别人的代码，打算分箱试试看
+同时要引入KFold了
+
+- 分箱
 
 
