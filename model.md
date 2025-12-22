@@ -165,31 +165,13 @@ n_estimators  max_depth  accuracy  precision    recall  f1_score
 
 移除了部分数据列，发现基本没有影响
 
-```yaml
-# === XGBoost Classifier Performance ===
-"XGBoost":
-    Accuracy: 0.6832
-    Precision: 0.7056
-    Recall: 0.8449
-    F1 Score: 0.7690
-    ROC AUC Score: 0.7241
-
-# === LightGBM Classifier Performance ===
-"LightGBM":
-    Accuracy: 0.6834
-    Precision: 0.7072
-    Recall: 0.8410
-    F1 Score: 0.7683
-    ROC AUC Score: 0.7238
-
-# === CatBoost Classifier Performance ===
-"Catboost":
-    Accuracy: 0.6803
-    Precision: 0.7006
-    Recall: 0.8518
-    F1 Score: 0.7688
-    ROC AUC Score: 0.7218
-```
+| 评估指标         | XGBoost | LightGBM | Catboost |
+| :---------------- | :------ | :------- | :------- |
+| 准确率（Accuracy） | 0.6832  | 0.6834   | 0.6803   |
+| 精确率（Precision） | 0.7056  | 0.7072   | 0.7006   |
+| 召回率（Recall）   | 0.8449  | 0.8410   | 0.8518   |
+| F1 分数（F1-Score） | 0.7690  | 0.7683   | 0.7688   |
+| ROC AUC 分数      | 0.7241  | 0.7238   | 0.7218   |
 
 感觉是比之前的结果明显好一点
 
@@ -206,27 +188,30 @@ n_estimators  max_depth  accuracy  precision    recall  f1_score
 
 我们修改了大量代码，引入了5折交叉验证，我们在5次训练中每次都选取最好的模型，然后将其对其五次训练结果取平均
 
-```yaml
-# === CatBoost Classifier Performance ===
-Accuracy: 0.6832
-Precision: 0.7057
-Recall: 0.8435
-F1 Score: 0.7685
-ROC AUC: 0.7255
-
-# === LightGBM Classifier Performance ===
-准确率: 0.6842
-精确率: 0.7089
-召回率: 0.8369
-F1 分数: 0.7676
-ROC AUC: 0.7267
-预测的自信程度: 0.6244
-```
+| 评估指标         | CatBoost | LightGBM |
+| :---------------- | :------- | :------- |
+| 准确率（Accuracy） | 0.6832   | 0.6842   |
+| 精确率（Precision） | 0.7057   | 0.7089   |
+| 召回率（Recall）   | 0.8435   | 0.8369   |
+| F1 分数（F1-Score） | 0.7685   | 0.7676   |
+| ROC AUC           | 0.7255   | 0.7267   |
+| 预测的自信程度     | -        | 0.6244   |
 
 结果我们发现这个模型本身的表现实际上相比Phase4提出的结果没有更大的突破， KFold并没有能优化我们的模型到更好的程度
 
 接下来尝试分箱操作，同时要尝试排名概率
 
+- 发现了一个非常意外的事情，我们实际上错误地把id代进去跑了，最后呈现出来的结果是预测的自信程度更高了，但是准确率更低了
 
+- 纠正了这个小错误，并且引入了分箱和排名概率后的结果为
 
+| 评估指标         | CatBoost | LightGBM |
+| :---------------- | :------- | :------- |
+| 准确率（Accuracy） | 0.6533   | 0.6530   |
+| 精确率（Precision） | 0.6681   | 0.6683   |
+| 召回率（Recall）   | 0.8816   | 0.8798   |
+| F1 分数（F1-Score） | 0.7602   | 0.7596   |
+| ROC AUC           | 0.6778   | 0.6774   |
+| 预测的自信程度     | 0.5415   | 0.5415   |
 
+## Phase 6
