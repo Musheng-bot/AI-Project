@@ -31,8 +31,8 @@ def prepare_data():
     df = df.fillna(df.mean())
     X = df.drop('diagnosed_diabetes', axis=1).values.astype(np.float32)
     y = df['diagnosed_diabetes'].values.astype(np.float32).reshape(-1, 1)
-    # scaler = StandardScaler()
-    # X = scaler.fit_transform(X)
+    scaler = StandardScaler()
+    X = scaler.fit_transform(X)
     X_train, X_test, y_train, y_test = train_test_split(
         X, y, test_size=0.2, random_state=42, stratify=y.ravel()
     )
@@ -78,43 +78,23 @@ def plot_feature_importance(model, features):
     for feature, importance in zip(features, imp):
         print(f"{feature}: {importance:.4f}")
 
-
-lgb_params = {
-    'objective': 'binary',
-    'metric': 'auc',
-    'boosting_type': 'gbdt',
-    'n_estimators': 2500,
-    'learning_rate': 0.03,
-    'num_leaves': 90,
-    'max_depth': 9,
-    'min_child_samples': 40,
-    'subsample': 0.85,
-    'colsample_bytree': 0.78,
-    'reg_alpha': 0.1,
-    'reg_lambda': 0.3,
-    'scale_pos_weight': 0.6,
-    'random_state': 42,
-    'n_jobs': -1,
-    'verbose': -1,
-    'device': 'gpu'
-}
-
 xgb_params = {
-    'n_estimators': 2200,
-    'learning_rate': 0.03,
-    'max_depth': 8,
-    'subsample': 0.8,
-    'colsample_bytree': 0.78,
-    'gamma': 0.1,
-    'reg_alpha': 0.1,
-    'reg_lambda': 1.0,
-    'scale_pos_weight': 0.6,
-    'random_state': 42,
-    'n_jobs': -1,
-    'eval_metric': 'auc',
-    'tree_method': 'hist',
-    'device': 'cuda'
+    'n_estimators': 200,
+    'max_depth': 5,
+    'learning_rate': 0.1,
+    'eval_metric': 'logloss',
+    'random_state': 42
 }
+
+lightgbm_params = {
+    'n_estimators': 200,
+    'max_depth': 5,
+    'learning_rate': 0.1,
+    'random_state': 42,
+    'objective': 'binary',
+    'metric': 'binary_logloss'
+}
+
 
 models = {
     # 'Random Forest': RandomForestClassifier(n_estimators=200, max_depth=5, random_state=42, n_jobs=-1),
@@ -124,8 +104,8 @@ models = {
     # 'Decision Tree': DecisionTreeClassifier(random_state=42, max_depth=5, min_samples_leaf=3, criterion='entropy'),
     # 'Naive Bayes': GaussianNB(),
     # 'Neural Network': MLPClassifier(hidden_layer_sizes=(50, 25), max_iter=500, random_state=42),
-    'XGBoost': XGBClassifier(n_estimators=200, max_depth=5, learning_rate=0.1, eval_metric='logloss', random_state=42),
-    'LightGBM': LGBMClassifier(**lightgbm_params)
+    'XGBoost': XGBClassifier(**xgb_params),
+    # 'LightGBM': LGBMClassifier(**lightgbm_params)
 }
 
 

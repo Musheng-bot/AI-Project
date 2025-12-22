@@ -62,3 +62,99 @@ F1 Score: 0.7563
 Correct Probability Mean: 0.5630
 Convince Probability Mean: 0.6363
 
+=== XGBoost Results ===
+Accuracy: 0.5662
+Precision: 0.7527
+Recall: 0.4527
+F1 Score: 0.5654
+Correct Probability Mean: 0.5393
+Convince Probability Mean: 0.6113
+
+=== XGBoost Results ===
+Accuracy: 0.6367
+Precision: 0.6496
+Recall: 0.9057
+F1 Score: 0.7565
+Correct Probability Mean: 0.5630
+Convince Probability Mean: 0.6362
+
+=== LightGBM Results ===
+Accuracy: 0.6368
+Precision: 0.6499
+Recall: 0.9045
+F1 Score: 0.7563
+Correct Probability Mean: 0.5630
+Convince Probability Mean: 0.6363
+
+=== XGBoost Results ===
+Accuracy: 0.6367
+Precision: 0.6496
+Recall: 0.9057
+F1 Score: 0.7565
+Correct Probability Mean: 0.5630
+Convince Probability Mean: 0.6362
+
+=== LightGBM Results ===
+Accuracy: 0.6370
+Precision: 0.6500
+Recall: 0.9044
+F1 Score: 0.7564
+Correct Probability Mean: 0.5631
+Convince Probability Mean: 0.6363
+
+=== XGBoost Results ===
+Accuracy: 0.6367
+Precision: 0.6496
+Recall: 0.9057
+F1 Score: 0.7565
+Correct Probability Mean: 0.5630
+Convince Probability Mean: 0.6362
+
+=== LightGBM Results ===
+Accuracy: 0.6370
+Precision: 0.6500
+Recall: 0.9044
+F1 Score: 0.7564
+Correct Probability Mean: 0.5631
+Convince Probability Mean: 0.6363
+
+=== XGBoost Results ===
+Accuracy: 0.6369
+Precision: 0.6504
+Recall: 0.9027
+F1 Score: 0.7561
+Correct Probability Mean: 0.5635
+Convince Probability Mean: 0.6375
+
+=== LightGBM Results ===
+Accuracy: 0.6370
+Precision: 0.6500
+Recall: 0.9044
+F1 Score: 0.7564
+Correct Probability Mean: 0.5631
+Convince Probability Mean: 0.6363
+
+=== XGBoost Results ===
+Accuracy: 0.6344
+Precision: 0.6510
+Recall: 0.8916
+F1 Score: 0.7525
+Correct Probability Mean: 0.5638
+Convince Probability Mean: 0.6414
+
+=== XGBoost Results ===
+Accuracy: 0.6324
+Precision: 0.6517
+Recall: 0.8810
+F1 Score: 0.7492
+Correct Probability Mean: 0.5643
+Convince Probability Mean: 0.6457
+
+=== XGBoost Results ===
+Accuracy: 0.6306
+Precision: 0.6348
+Recall: 0.9590
+F1 Score: 0.7639
+Correct Probability Mean: 0.5559
+Convince Probability Mean: 0.6253
+

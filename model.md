@@ -152,4 +152,11 @@ n_estimators  max_depth  accuracy  precision    recall  f1_score
 
 ## Phase3
 
-节点无法通过分裂实现有效优化
+| 模型 | Accuracy | Precision | Recall | F1 Score | Correct Probability Mean | Convince Probability Mean |
+|------|----------|-----------|--------|----------|--------------------------|---------------------------|
+| XGBoost | 0.6367 | 0.6496 | 0.9057 | 0.7565 | 0.5630 | 0.6362 |
+| LightGBM | 0.6368 | 0.6499 | 0.9045 | 0.7563 | 0.5630 | 0.6363 |
+
+节点无法通过分裂实现有效优化，这是没有调参的版本，说实话表现很一般，甚至不如全猜阳性，先前我们认为，只取部分数据\['bmi','waist_to_hip_ratio','cholesterol_total','triglycerides','family_history_diabetes','diagnosed_diabetes'\]，这些关联度更大的数据会有比较好的结果，但是最后反映出来的是，我们的模型表现很烂，因此我们放弃这样的做法，尝试使用更多的数据列。
+
+## Phase4
