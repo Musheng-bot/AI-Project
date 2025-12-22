@@ -167,25 +167,41 @@ n_estimators  max_depth  accuracy  precision    recall  f1_score
 
 ```yaml
 # === XGBoost Classifier Performance ===
-Accuracy: 0.6832
-Precision: 0.7056
-Recall: 0.8449
-F1 Score: 0.7690
-ROC AUC Score: 0.7241
+"XGBoost":
+    Accuracy: 0.6832
+    Precision: 0.7056
+    Recall: 0.8449
+    F1 Score: 0.7690
+    ROC AUC Score: 0.7241
 
 # === LightGBM Classifier Performance ===
-Accuracy: 0.6834
-Precision: 0.7072
-Recall: 0.8410
-F1 Score: 0.7683
-ROC AUC Score: 0.7238
+"LightGBM":
+    Accuracy: 0.6834
+    Precision: 0.7072
+    Recall: 0.8410
+    F1 Score: 0.7683
+    ROC AUC Score: 0.7238
 
 # === CatBoost Classifier Performance ===
-Accuracy: 0.6803
-Precision: 0.7006
-Recall: 0.8518
-F1 Score: 0.7688
-ROC AUC Score: 0.7218
+"Catboost":
+    Accuracy: 0.6803
+    Precision: 0.7006
+    Recall: 0.8518
+    F1 Score: 0.7688
+    ROC AUC Score: 0.7218
 ```
 
 感觉是比之前的结果明显好一点
+
+> 感受就是，在机器学习中，喂完整的，特征更多的数据还是很有必要的，这样能帮助你回归出更好的结果。
+
+说实话到这里我感觉已经走到头了，没什么好调参的地方了，要不就这样子总结总结完事吧？
+其实我还是不太甘心，，因为我们的准确率始终连70都到不了, kaggle提交最后得分只有0.60左右，说实话调参也没有什么好调的，它基本就这个层次了。
+
+> 代码存在[run.ipynb](run.ipynb)中
+
+## Phase5
+
+学习了别人的代码，打算分箱试试看
+
+
