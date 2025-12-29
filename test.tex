@@ -1,0 +1,605 @@
+
+\section{Model Selection and Training}
+
+\subsection{Model Selection}
+
+Based on the task characteristics and data features, this study selected 10 representative machine learning models for comprehensive comparative experiments to explore the optimal solution.
+
+\begin{table}[htbp]
+
+  \centering
+
+  \caption{Model Categories and Specific Names}
+
+  \begin{tabular}{cc}
+
+    \toprule
+
+    Model Category & Specific Model Name \\
+
+    \midrule
+
+    Traditional Machine Learning Models & Random Forest \\
+
+    Ensemble Learning Models & XGBoost\footnote{[3]}, LightGBM\footnote{[4]}, CatBoost\footnote{[5]} (Tree-based ensemble models, suitable for structured data, gradient boosting framework) \\
+
+    Neural Networks & Multilayer Perceptron (MLP, simple deep learning model for comparing traditional methods)\footnote{[2]} \\
+
+    \bottomrule
+
+  \end{tabular}
+
+\end{table}
+
+The theoretical basis of traditional machine learning models is derived from the classic statistical learning framework\footnote{[1]}, while ensemble learning models are engineered optimizations and algorithmic improvements based on gradient boosting trees.
+
+\subsection{Model Training and Core Parameters}
+
+To ensure model performance, all models were trained under a unified 5-fold cross-validation framework. The following are the core hyperparameter configurations of the three mainstream ensemble learning models used in the experiments.
+
+\begin{table}[htbp]
+
+  \centering
+
+  \caption{Core Hyperparameter Configurations of Three Ensemble Learning Models}
+
+  \begin{tabular}{cccc}
+
+    \toprule
+
+    Parameter & CatBoost\footnote{[5]} & LightGBM\footnote{[4]} & XGBoost\footnote{[3]} \\
+
+ \midrule
+
+    \textbf{Task Type} & \verb|task_type|: "GPU" & N/A & N/A \\
+
+    \textbf{Objective Function} & \verb|loss_function|: "Logloss" & \verb|objective|: "binary" & \verb|objective|: "binary:logistic" \\
+
+    \textbf{Evaluation Metric} & \verb|eval_metric|: "AUC" & N/A (uses default metric of objective function automatically) & N/A (uses default metric of objective function automatically) \\
+
+    \textbf{Number of Iterations} & \verb|iterations|: 4000 & \verb|n_estimators|: 200 & \verb|n_estimators|: 200 \\
+
+    \textbf{Learning Rate} & \verb|learning_rate|: 0.05 & \verb|learning_rate|: 0.03 & \verb|learning_rate|: 0.03 \\
+
+    \textbf{Tree Depth} & \verb|depth|: 6 & \verb|num_leaves|: 64 (number of leaf nodes, related to depth) & \verb|max_depth|: 6 \\
+
+    \textbf{Regularization} & \verb|l2_leaf_reg|: 6 & N/A & N/A \\
+
+    \textbf{Sampling Strategy} & \verb|bootstrap_type|: "Bayesian", \verb|bagging_temperature|: 0.8 & \verb|subsample|: 0.8, \verb|colsample_bytree|: 0.8 & \verb|subsample|: 0.8, \verb|colsample_bytree|: 0.8 \\
+
+    \textbf{Early Stopping/Minimum Samples per Leaf} & \verb|min_data_in_leaf|: 50 & N/A & N/A \\
+
+    \textbf{Random Seed} & \verb|random_seed|: 42 & \verb|random_state|: 42 & \verb|random_state|: 42 \\
+
+    \textbf{Others} & \verb|random_strength|: 1.0, \verb|verbose|: 200 & N/A & N/A \\
+
+    \bottomrule
+
+  \end{tabular}
+
+\end{table}
+
+\section{Training Process}
+
+\subsection{Single Model Training}
+
+All models were trained on the training subset and evaluated on the validation subset. The validation set and training set were split in a 2:8 ratio and randomly shuffled to reduce errors caused by order. During the training of CatBoost, an early stopping strategy was enabled to avoid overfitting, and the optimal performance was finally achieved at approximately 2507 iterations.
+
+\subsection{Model Ensemble}
+
+Two fusion strategies were designed to ensemble the prediction results of CatBoost and LightGBM:
+
+1. Rank Probability Fusion: Rank the prediction probabilities and then perform weighted fusion (weight k=0.4-0.8) \\
+
+2. Normalization Fusion: First normalize the prediction probabilities (min-max standardization), then perform weighted fusion to eliminate the difference in output scales between different models.
+
+\section{Feature Importance Analysis}
+
+Based on the feature importance evaluation results of the CatBoost model, a horizontal bar chart was drawn as follows:
+
+\begin{figure}[htbp]
+
+  \centering
+
+  \includegraphics{catboost_feature_importance.png}
+
+  \caption{CatBoost Feature Importance Chart}
+
+\end{figure}
+
+The ranking and scores of key feature importance are shown in the following table:
+
+\begin{table}[htbp]
+
+  \centering
+
+  \caption{Key Feature Importance Ranking}
+
+  \begin{tabular}{cc}
+
+    \toprule
+
+    Feature Name & Importance Score \\
+
+    \midrule
+
+    physical_activity_minutes_per_week & 29.6856 \\
+
+    family_history_diabetes & 25.4918 \\
+
+    age & 10.7842 \\
+
+    triglycerides & 7.3904 \\
+
+    bmi (Body Mass Index) & 3.8019 \\
+
+    ldl_cholesterol (Low-Density Lipoprotein Cholesterol) & 3.0498 \\
+
+    cholesterol_total (Total Cholesterol) & 2.7646 \\
+
+    heart_rate & 2.4463 \\
+
+    systolic_bp (Systolic Blood Pressure) & 2.3437 \\
+
+    diet_score & 2.3154 \\
+
+    \bottomrule
+
+  \end{tabular}
+
+\end{table}
+
+\subsection{Analysis Conclusions}
+
+1. The number of minutes of physical activity per week is the most important feature, indicating that living habits have a significant impact on diabetes diagnosis; \\
+
+2. A family history of diabetes ranks second, verifying the core role of genetic factors in the onset of diabetes; \\
+
+3. Physiologically related features such as age, triglycerides, and BMI also have high importance, which is consistent with medical common sense; \\
+
+4. The importance of hypertension history and cardiovascular disease history is extremely low, which may be related to the distribution or weak correlation of these two types of features in the data.
+
+\section{Model Performance Evaluation and Comparison}
+
+\subsection{Comprehensive Comparison of Single Model Performance}
+
+The performance indicators of the optimal version of all models are shown in the following table:
+
+\begin{table}[htbp]
+
+  \centering
+
+  \caption{Comprehensive Performance Comparison of Single Models}
+
+  \begin{tabular}{cccccc}
+
+    \toprule
+
+    Model Name & Accuracy & Precision & Recall & F1 Score & ROC AUC \\
+
+    \midrule
+
+    CatBoost & 0.6835 & 0.7063 & 0.8427 & 0.7685 & 0.7258 \\
+
+    LightGBM & 0.6818 & 0.7027 & 0.8485 & 0.7687 & 0.7230 \\
+
+    XGBoost & 0.6764 & 0.6939 & 0.8602 & 0.7682 & 0.7156 \\
+
+    Random Forest & 0.6661 & 0.6785 & 0.8823 & 0.7671 & 0.6993 \\
+
+    Neural Network (MLP) & 0.6656 & 0.6844 & 0.8602 & 0.7623 & 0.6960 \\
+
+    \bottomrule
+
+  \end{tabular}
+
+\end{table}
+
+\subsection{Core Conclusions}
+
+1. Tree-based ensemble models (CatBoost, LightGBM, XGBoost) are comprehensively superior to traditional models and neural networks, reflecting the advantages of ensemble learning in structured data classification tasks; \\
+
+2. CatBoost has the best comprehensive performance: the highest accuracy (0.6835), precision (0.7063), and ROC AUC (0.7258); \\
+
+3. LightGBM is slightly better in F1 score (0.7687), balancing precision and recall; \\
+
+4. Random Forest has the highest recall rate (0.8823), which is suitable for scenarios requiring high recognition of positive samples (such as disease screening, prioritizing the avoidance of missed diagnoses); \\
+
+5. In fact, other common machine learning models have been tried in the early exploration of models, and their performance is not better than that of Random Forest or MLP, so they are not discussed here.
+
+\subsection{Comparative Analysis of Key Experimental Operations}
+
+1. Impact of Binning Operation: Performance comparison between no binning and different binning strategies (taking CatBoost as an example):
+
+\begin{table}[htbp]
+
+  \centering
+
+  \caption{Impact of Binning Operation on Model Performance}
+
+  \begin{tabular}{ccccccc}
+
+    \toprule
+
+    Number of Bins & Binning Strategy & Accuracy & Precision & Recall & F1 Score & ROC AUC \\
+
+ \midrule
+
+    - (No Binning) & - (No Binning) & 0.6834 & 0.7062 & 0.8427 & 0.7684 & 0.7258 \\
+
+    5 & uniform & 0.6532 & 0.6681 & 0.8818 & 0.7602 & 0.6779 \\
+
+    10 & uniform & 0.6649 & 0.6861 & 0.8525 & 0.7603 & 0.6963 \\
+
+    20 & quantile & 0.6681 & 0.6898 & 0.8498 & 0.7614 & 0.7028 \\
+
+    \bottomrule
+
+  \end{tabular}
+
+\end{table}
+
+Visual Comparison: Draw the model training iteration curves (AUC convergence curves) of no binning and binning (20-quantile):
+
+\begin{figure}[htbp]
+
+  \centering
+
+  \includegraphics{res/catboost_auc_convergence_curve.png}
+
+  \caption{AUC Convergence Curve Without Binning}
+
+\end{figure}
+
+\begin{figure}[htbp]
+
+  \centering
+
+  \includegraphics{res/catboost_new_auc_convergence_curve.png}
+
+  \caption{AUC Convergence Curve With Binning (20-quantile)}
+
+\end{figure}
+
+Conclusions:
+
+- The model performance is optimal without binning, and the binning operation leads to the loss of feature information; \\
+
+- Among binning strategies, quantile (equal frequency) is better than uniform (equal interval); \\
+
+- After binning, the model training speed is accelerated (the number of iterations is reduced), but the performance is degraded, so binning processing is not required for this dataset.
+
+2. Impact of Decision Threshold (ALPHA): Compare the model performance when ALPHA=0.4 and ALPHA=0.6 (taking core models as examples):
+
+\begin{table}[htbp]
+
+  \centering
+
+  \caption{Impact of Decision Threshold (ALPHA) on Model Performance}
+
+  \begin{tabular}{ccccccccc}
+
+    \toprule
+
+    Model Name & Acc(α=0.4) & Prec(α=0.4) & Rec(α=0.4) & F1(α=0.4) & Acc(α=0.6) & Prec(α=0.6) & Rec(α=0.6) & F1(α=0.6) \\
+
+    \midrule
+
+    CatBoost & 0.6684 & 0.6650 & 0.9430 & 0.7800 & 0.6654 & 0.7609 & 0.6754 & 0.7156 \\
+
+    LightGBM & 0.6651 & 0.6610 & 0.9498 & 0.7795 & 0.6643 & 0.7604 & 0.6738 & 0.7145 \\
+
+    XGBoost & 0.6578 & 0.6534 & 0.9606 & 0.7777 & 0.6570 & 0.7561 & 0.6638 & 0.7070 \\
+
+    \bottomrule
+
+  \end{tabular}
+
+\end{table}
+
+Conclusions:
+
+- When ALPHA=0.4, the model is more balanced, the recall rate is greatly improved (e.g., CatBoost recall rate 0.9430 vs 0.6754), and the F1 score is better; \\
+
+- When ALPHA=0.6, the precision is improved, but the recall rate is decreased, which is suitable for scenarios requiring strict requirements on false positives.
+
+3. Comparison of Ensemble Strategies: Performance comparison between Rank Probability Fusion and Normalization Fusion (ALPHA = 0.5):
+
+\begin{table}[htbp]
+
+  \centering
+
+  \caption{Performance Comparison of Ensemble Strategies}
+
+  \begin{tabular}{cccccc}
+
+    \toprule
+
+    Ensemble Strategy & Accuracy & Precision & Recall & F1 Score & ROC AUC \\
+
+    \midrule
+
+    Rank Probability Fusion (k=0.8) & 0.6743 & 0.7480 & 0.7200 & 0.7337 & 0.7254 \\
+
+    Normalization Fusion (k=0.8) & 0.6742 & 0.6740 & 0.9245 & 0.7796 & 0.7254 \\
+
+    Single CatBoost Model & 0.6835 & 0.7063 & 0.8427 & 0.7685 & 0.7258 \\
+
+    \bottomrule
+
+  \end{tabular}
+
+\end{table}
+
+Conclusions:
+
+Normalization Fusion is superior to Rank Probability Fusion. After normalization, the recall rate is greatly improved (0.9245 vs 0.7200), and the F1 score is close to that of the single optimal model. The ensemble model has stronger stability. However, Rank Probability Fusion is better in precision.
+
+4. Role of Cross-Validation: Compare the performance of 5-fold cross-validation and single-split training (taking CatBoost as an example):
+
+\begin{table}[htbp]
+
+  \centering
+
+  \caption{Impact of Cross-Validation on Model Performance}
+
+  \begin{tabular}{cccc}
+
+    \toprule
+
+    Evaluation Metric & 5-Fold Cross-Validation & Single-Split Training & Difference (Cross - Single) \\
+
+    \midrule
+
+    Accuracy & 0.6833 & 0.6829 & +0.0004 \\
+
+    Precision & 0.7060 & 0.7057 & +0.0003 \\
+
+    Recall & 0.8428 & 0.8427 & +0.0001 \\
+
+    F1 Score & 0.7684 & 0.7681 & +0.0003 \\
+
+    ROC AUC & 0.7258 & 0.7252 & +0.0006 \\
+
+    \bottomrule
+
+  \end{tabular}
+
+\end{table}
+
+Conclusion: Cross-validation has a limited improvement on model performance.
+
+\section{Sensitivity Analysis of Weight Parameter k in Model Ensemble}
+
+\subsection{Background and Objectives of Analysis}
+
+In machine learning model ensembles, the weight parameter k is used to balance the contribution of different base models (such as CatBoost and LightGBM) in the final prediction. Its value directly affects the comprehensive performance of the ensemble model.
+
+The purpose of this analysis is to compare the impact of changes in weight k on the key performance indicators (Accuracy, Precision, Recall, F1 Score, ROC AUC) of the model under two different ensemble strategies (unnormalized ensemble and normalized ensemble), so as to find the optimal weight configuration and reveal the advantages and disadvantages of the ensemble strategies themselves.
+
+\subsection{Data and Methods}
+
+\subsubsection{Data}
+
+The analysis is based on two performance comparison tables:
+
+1. Table 1: Performance Comparison Table of Unnormalized Ensemble Models with Different k Values: Shows the performance when directly performing weighted fusion on model prediction probabilities. \\
+
+2. Table 2: Performance Comparison Table of Normalized Ensemble Models with Different k Values: Shows the performance when first performing Min-Max normalization on each model's prediction probabilities and then performing weighted fusion.
+
+\subsubsection{Methods}
+
+1. Horizontal Comparison: Under the same ensemble strategy, analyze the fluctuation trend and stability of various performance indicators when the k value changes from 0.2 to 0.8. \\
+
+2. Vertical Comparison: Under the same k value, compare the performance difference between unnormalized ensemble and normalized ensemble to evaluate the value of normalization operation. \\
+
+3. Optimal Value Selection: Determine the optimal k value under each strategy according to the F1 score (comprehensive evaluation indicator) and ROC AUC (model discrimination ability indicator).
+
+\subsection{Variation Trend of Performance Indicators with k Value}
+
+\begin{table}[htbp]
+
+  \centering
+
+  \caption{Performance of Unnormalized Ensemble Models with Different k Values}
+
+  \begin{tabular}{cccccc}
+
+    \toprule
+
+    k Value & Accuracy & Precision & Recall & F1 Score & ROC AUC \\
+
+    \midrule
+
+    0.4 & 0.6740 & 0.7476 & 0.7200 & 0.7336 & 0.7248 \\
+
+    0.5 & 0.6742 & 0.7478 & 0.7202 & 0.7337 & 0.7251 \\
+
+    0.6 & 0.6742 & 0.7478 & 0.7203 & 0.7338 & 0.7253 \\
+
+    0.7 & 0.6742 & 0.7479 & 0.7199 & 0.7337 & 0.7254 \\
+
+    0.8 & 0.6743 & 0.7480 & 0.7200 & 0.7337 & 0.7254 \\
+
+    \bottomrule
+
+  \end{tabular}
+
+\end{table}
+
+\begin{table}[htbp]
+
+  \centering
+
+  \caption{Performance of Normalized Ensemble Models with Different k Values}
+
+  \begin{tabular}{cccccc}
+
+    \toprule
+
+    k Value & Accuracy & Precision & Recall & F1 Score & ROC AUC \\
+
+    \midrule
+
+    0.2 & 0.6758 & 0.6778 & 0.9149 & 0.7787 & 0.7240 \\
+
+    0.3 & 0.6756 & 0.6771 & 0.9167 & 0.7789 & 0.7244 \\
+
+    0.4 & 0.6751 & 0.6763 & 0.9182 & 0.7789 & 0.7248 \\
+
+    0.5 & 0.6746 & 0.6755 & 0.9197 & 0.7789 & 0.7251 \\
+
+    0.6 & 0.6747 & 0.6752 & 0.9214 & 0.7793 & 0.7253 \\
+
+    0.7 & 0.6745 & 0.6745 & 0.9233 & 0.7795 & 0.7254 \\
+
+    0.8 & 0.6742 & 0.6740 & 0.9245 & 0.7796 & 0.7254 \\
+
+    \bottomrule
+
+  \end{tabular}
+
+\end{table}
+
+For intuitive comparison, we select the performance when k=0.8 for comparison:
+
+\begin{table}[htbp]
+
+  \centering
+
+  \caption{Performance Comparison of Different Ensemble Strategies (k=0.8)}
+
+  \begin{tabular}{ccccccc}
+
+    \toprule
+
+    Strategy & k Value & Accuracy & Precision & Recall & F1 Score & ROC AUC \\
+
+    \midrule
+
+    \textbf{Unnormalized Ensemble} & 0.8 & 0.6743 & 0.7480 & 0.7200 & \textbf{0.7337} & 0.7254 \\
+
+    \textbf{Normalized Ensemble} & 0.8 & 0.6742 & 0.6740 & 0.9245 & \textbf{0.7796} & 0.7254 \\
+
+    \bottomrule
+
+  \end{tabular}
+
+\end{table}
+
+\subsection{Key Findings}
+
+1. The normalized ensemble strategy is significantly superior to the unnormalized strategy: Normalizing the prediction probabilities of the base models can effectively balance the contributions between models and greatly improve the F1 score of the ensemble model, which is the most important finding in this analysis; \\
+
+2. The selection of weight k is strategy-dependent: \\
+
+   - Under the \textbf{unnormalized} strategy, the impact of k value is very small, the model performance is stable, and the selection range is loose; \\
+
+   - Under the \textbf{normalized} strategy, the k value is an important adjustable parameter, and the optimal balance between precision and recall can be found by adjusting it; \\
+
+3. Optimal weight configuration: For the model adopting the normalized ensemble strategy, setting the weight k of CatBoost to \textbf{0.8} can obtain the highest F1 score (0.7796) and ROC AUC (0.7254), which is the optimal configuration in this experiment.
+
+\subsection{Model Defects and Cause Analysis}
+
+The accuracy of all models has not exceeded 70%, and the core reasons are as follows:
+
+1. Data Characteristics: The data has a high degree of discretization, and some features have weak correlation with the target variable, making it difficult to mine effective laws; \\
+
+2. Class Imbalance: The proportion of positive samples is too high (62.33%), and the model tends to predict positive samples, affecting accuracy; \\
+
+3. Feature Limitations: Lack of highly relevant biomarker features (such as fasting blood glucose level, glycated hemoglobin, etc.), and the existing features have limited discriminative power for diabetes diagnosis; \\
+
+4. Model Upper Limit: The feature expression ability of structured data is limited, and traditional machine learning models are difficult to capture complex nonlinear relationships.
+
+\section{Final Prediction and Submission}
+
+\subsection{Final Model Selection}
+
+The normalized ensemble model of CatBoost and LightGBM (weight k=0.8) was adopted, with a decision threshold ALPHA=0.4. The specific process is as follows:
+
+1. Use CatBoost and LightGBM to predict the test set respectively to obtain prediction probabilities; \\
+
+2. Perform min-max normalization on the prediction probabilities of the two models; \\
+
+3. Perform weighted fusion according to k=0.8 (CatBoost weight) and 1-k=0.2 (LightGBM weight) to obtain the final prediction probability; \\
+
+4. Use ALPHA=0.4 as the threshold to convert the prediction probability into a binary classification result (0/1).
+
+\subsection{Submission Results}
+
+Generate the final prediction file \verb|submission.csv|, which contains two columns: id and diagnosed_diabetes. After submission to the Kaggle platform, the final score is 0.63399, which is basically consistent with the performance of the validation set, verifying the generalization ability of the model.
+
+The first 5 examples of the test set prediction results are as follows:
+
+\begin{table}[htbp]
+
+  \centering
+
+  \caption{First 5 Prediction Results of Test Set}
+
+  \begin{tabular}{cc}
+
+    \toprule
+
+    id & diagnosed_diabetes \\
+
+    \midrule
+
+    700000 & 1 \\
+
+    700001 & 1 \\
+
+    700002 & 1 \\
+
+    700003 & 0 \\
+
+    700004 & 1 \\
+
+    \bottomrule
+
+  \end{tabular}
+
+\end{table}
+
+\section{Summary and Outlook}
+
+\subsection{Core Conclusions of the Project}
+
+1. Model Selection: CatBoost is the optimal single model for this task. The ensemble model (normalized fusion of CatBoost and LightGBM) has stronger stability and is suitable for practical applications; \\
+
+2. Key Parameters: The decision threshold ALPHA=0.4 is more suitable for diabetes screening scenarios (prioritizing recall rate to reduce missed diagnoses), and binning operation is ineffective for the current dataset; \\
+
+3. Data Value: Complete feature data (rather than a small number of selected features) can significantly improve model performance, and more effective information should be retained first in feature engineering.
+
+\subsection{Improvement Directions and Outlook}
+
+1. Data Level: \\
+
+   - Supplement highly relevant biomarker features (such as fasting blood glucose, glycated hemoglobin, insulin level, etc.); \\
+
+   - Optimize data collection quality, reduce the impact of feature discretization, and increase sample diversity; \\
+
+   - Adopt methods such as oversampling, undersampling, or SMOTE to handle class imbalance problems. \\
+
+2. Model Level: \\
+
+   - Try more complex ensemble strategies (such as Stacking) to combine the advantages of multiple base models; \\
+
+   - Introduce attention mechanisms to enhance the weight of key features and improve model interpretability; \\
+
+   - Try deep learning models (such as TabNet, DeepFM) to adapt to the complex relationships of structured data.
+
+\section*{References}
+
+\addcontentsline{toc}{section}{References}
+
+[1] Hastie T, Tibshirani R, Friedman J H. \textit{The Elements of Statistical Learning: Data Mining, Inference, and Prediction} (2nd ed.)[M]. Springer, 2009.
+
+[2] Bishop C M. \textit{Pattern Recognition and Machine Learning}[M]. Springer, 2006.
+
+[3] Chen T, Guestrin C. Xgboost: A scalable tree boosting system[C]//Proceedings of the 22nd ACM SIGKDD International Conference on Knowledge Discovery and Data Mining. 2016: 785-794.
+
+[4] Ke G, Meng Q, Finley T, et al. Lightgbm: A highly efficient gradient boosting decision tree[J]. Advances in Neural Information Processing Systems, 2017, 30: 3146-3154.
+
+[5] Prokhorenkova L, Gusev G, Vorobev A, et al. CatBoost: unbiased boosting with categorical features[J]. Advances in Neural Information Processing Systems, 2018, 31: 6638-6648.
+
